@@ -1,0 +1,101 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container { /* Main container, White card */
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #8B4513;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.search-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+button {
+    background-color: #8B4513;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #A0522D;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Status message styles */
+.status {
+    text-align: center;
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.status.loading {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Coffee shops list styles */
+.coffee-shops {
+    margin-top: 30px;
+}
+
+.coffee-shop {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fafafa;
+}
+
+.coffee-shop h3 {
+    margin: 0 0 10px 0;
+    color: #8B4513;
+}
+
+.coffee-shop p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.rating {
+    color: #ff6b35;
+    font-weight: bold;
+}
+
+.distance {
+    color: #666;
+    font-style: italic;
+}
