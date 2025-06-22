@@ -1,0 +1,32 @@
+# API Keys
+config.js
+.env
+api-keys.js
+
+# Google API configuration files
+google-config.js
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor settings
+.vscode/settings.json
+*.swp
+*.swo
+
+# Log files
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Node modules (if we add Node.js later)
+node_modules/
+
+# Build directories (if we add build tools later)
+dist/
+build/
