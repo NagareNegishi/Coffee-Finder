@@ -105,13 +105,52 @@ function getMockCoffeeShops() {
  * Search for coffee shops near the user's location.
  * @returns {Promise<void>} A promise that resolves when the search is complete.
  */
-async function searchCoffeeShops() {
+async function searchCoffeeShops(radius = 500) {
     try {
         showStatus('Searching for coffee shops...', 'loading');
         
-        // replace with actual API call to Google Places or similar service!!!!!1
-        // const response = await fetch(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${userLocation.lat},${userLocation.lng}&radius=1000&type=cafe&key=YOUR_API_KEY`);
+        // Overpass Query, reference: OpenStreetMap Data Format.md
+        const overpassQuery = `
+            [out:json][timeout:25];
+            (
+                node["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+                way["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+                // node["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+                // way["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+                // node["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+                // way["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+            );
+            out center;
+        `;
+
+        // Fetch data from Overpass API
+        const response = await fetch('https://overpass-api.de/api/interpreter', {
+            method: 'POST',
+            body: overpassQuery
+        });
+
+        if (!response.ok) {
+            throw new Error(`Overpass API request failed with status ${response.status}`);
+        }
+        const data = await response.json();
+
+
+        // ===============================
+        console.log('Overpass API Response:', data);
+        console.log('Number of elements:', data.elements?.length);
+        console.log('First element:', data.elements?.[0]);
         
+        console.log('All cafe names:');
+        data.elements?.forEach((element, index) => {
+            console.log(`${index + 1}. ${element.tags?.name || 'Unnamed cafe'}`);
+        });
+        // ==================================
+
+
+
+
+
+
         // mock data for now!!!!
         coffeeShops = await getMockCoffeeShops();
         
