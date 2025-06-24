@@ -38,7 +38,7 @@ function getUserLocation() {
             (position) => {
                 userLocation = {
                     lat: position.coords.latitude,
-                    lng: position.coords.longitude
+                    lon: position.coords.longitude
                 };
                 resolve(userLocation);
             },
@@ -68,38 +68,107 @@ function getUserLocation() {
     });
 }
 
-// Mock function to simulate fetching coffee shops data
-// In a real application, this would call the Google Places API or similar service
-function getMockCoffeeShops() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const mockShops = [
-                {
-                    name: "Starbucks Coffee",
-                    address: "123 Main Street",
-                    rating: 4.2,
-                    distance: "0.3 km",
-                    openNow: true
-                },
-                {
-                    name: "Local Coffee House",
-                    address: "456 Oak Avenue",
-                    rating: 4.7,
-                    distance: "0.5 km",
-                    openNow: true
-                },
-                {
-                    name: "Café Mocha",
-                    address: "789 Pine Street",
-                    rating: 4.0,
-                    distance: "0.8 km",
-                    openNow: false
-                }
-            ];
-            resolve(mockShops);
-        }, 1000);
-    });
+// // Mock function to simulate fetching coffee shops data
+// // In a real application, this would call the Google Places API or similar service
+// function getMockCoffeeShops() {
+//     return new Promise((resolve) => {
+//         setTimeout(() => {
+//             const mockShops = [
+//                 {
+//                     name: "Starbucks Coffee",
+//                     address: "123 Main Street",
+//                     rating: 4.2,
+//                     distance: "0.3 km",
+//                     openNow: true
+//                 },
+//                 {
+//                     name: "Local Coffee House",
+//                     address: "456 Oak Avenue",
+//                     rating: 4.7,
+//                     distance: "0.5 km",
+//                     openNow: true
+//                 },
+//                 {
+//                     name: "Café Mocha",
+//                     address: "789 Pine Street",
+//                     rating: 4.0,
+//                     distance: "0.8 km",
+//                     openNow: false
+//                 }
+//             ];
+//             resolve(mockShops);
+//         }, 1000);
+//     });
+// }
+
+
+
+
+
+
+/**
+ * Parse the Overpass API response and extract coffee shop data.
+ * @param {Object} overpassData - The Overpass API response data.
+ * @param {Object} userLocation - The user's current location (latitude and longitude).
+ * @returns {Array} An array of coffee shop objects.
+ */
+function parseOverpassData(overpassData, userLocation) {
+    if (!overpassData.elements || overpassData.elements.length === 0) {
+        console.warn('No coffee shops found in the Overpass API response');
+        return [];
+    }
+
+    const coffeeShops = overpassData.elements.map(element => {
+        // Location coordinates
+        let lat, lon;
+        if (element.type === 'node') {
+            lat = element.lat;
+            lon = element.lon;
+        } else if (element.center) { // way
+            lat = element.center.lat;
+            lon = element.center.lon;
+        } else {
+            console.warn('Way without center found, skipping: ', element);
+            return null;
+        }
+
+        // Basic information
+        const tags = element.tags || {};
+        const name = tags.name || 'Unnamed Venue';
+        const address = tags.address || 'No address provided'; // for now
+        const openingHours = tags.opening_hours || null;
+
+        // Additional information
+        const phone = tags.phone || tags.mobile || null;
+        const website = tags.website || null;
+
+        return {
+            name: name,
+            lat: lat,
+            lon: lon,
+            address: address,
+            openingHours: openingHours,
+            phone: phone,
+            website: website,
+            id: element.id,
+            type: element.type
+        };
+    }).filter(shop => shop !== null); // Filter out any null entries
+    console.log('Parsed coffee shops:', coffeeShops);
+    return coffeeShops;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Search for coffee shops near the user's location.
@@ -113,12 +182,12 @@ async function searchCoffeeShops(radius = 500) {
         const overpassQuery = `
             [out:json][timeout:25];
             (
-                node["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
-                way["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
-                // node["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
-                // way["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
-                // node["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
-                // way["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lng});
+                node["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+                way["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+                // node["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+                // way["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+                // node["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+                // way["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
             );
             out center;
         `;
@@ -134,25 +203,12 @@ async function searchCoffeeShops(radius = 500) {
         }
         const data = await response.json();
 
-
-        // ===============================
-        console.log('Overpass API Response:', data);
-        console.log('Number of elements:', data.elements?.length);
-        console.log('First element:', data.elements?.[0]);
-        
-        console.log('All cafe names:');
-        data.elements?.forEach((element, index) => {
-            console.log(`${index + 1}. ${element.tags?.name || 'Unnamed cafe'}`);
-        });
-        // ==================================
-
-
-
-
+        // Parse the data from Overpass API
+        coffeeShops = parseOverpassData(data, userLocation);
 
 
         // mock data for now!!!!
-        coffeeShops = await getMockCoffeeShops();
+        //coffeeShops = await getMockCoffeeShops();
         
         displayCoffeeShops();
         showStatus(`Found ${coffeeShops.length} coffee shops nearby`, 'success');
@@ -198,7 +254,7 @@ async function findCoffeeShops() {
         
         // Get user location
         await getUserLocation();
-        showStatus(`Location found: ${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`, 'success');
+        showStatus(`Location found: ${userLocation.lat.toFixed(4)}, ${userLocation.lon.toFixed(4)}`, 'success');
         
         // Search for coffee shops
         await searchCoffeeShops();
