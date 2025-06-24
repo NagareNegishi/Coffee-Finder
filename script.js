@@ -101,10 +101,32 @@ function getUserLocation() {
 //     });
 // }
 
+/**
+ * Passe the address tags from OpenStreetMap and build a formatted address string.
+ * @param {Object} tags - The tags may contain address information.
+ * @returns {string|null} A formatted address string or null if no address information is available
+ */
+function buildAddress(tags){
+    if (!tags) return null;
 
+    const addressParts = [];
 
+    // Street address
+    if (tags['addr:housenumber'] && tags['addr:street']) {
+        addressParts.push(`${tags['addr:housenumber']} ${tags['addr:street']}`);
+    } else if (tags['addr:street']) {
+        addressParts.push(tags['addr:street']);
+    }
 
+    if (tags['addr:suburb']) {
+        addressParts.push(tags['addr:suburb']);
+    }
+    if (tags['addr:city']) {
+        addressParts.push(tags['addr:city']);
+    }
 
+    return addressParts.length > 0 ? addressParts.join(', ') : null;
+}
 
 /**
  * Parse the Overpass API response and extract coffee shop data.
@@ -135,7 +157,7 @@ function parseOverpassData(overpassData, userLocation) {
         // Basic information
         const tags = element.tags || {};
         const name = tags.name || 'Unnamed Venue';
-        const address = tags.address || 'No address provided'; // for now
+        const address = buildAddress(tags);
         const openingHours = tags.opening_hours || null;
 
         // Additional information
@@ -219,6 +241,19 @@ async function searchCoffeeShops(radius = 500) {
     }
 }
 
+
+/**
+ * Helper function to get the display status of a coffee shop based on its openNow property.
+ * @param {*} openNow
+ * @returns {string} A string representing the status of the coffee shop.
+ */
+function getStatusDisplay(openNow) {
+    if (openNow === true) return '🟢 Open Now';
+    if (openNow === false) return '🔴 Closed';
+    return '🟡 Unknown';
+}
+
+
 /**
  * Display the list of coffee shops in the UI.
  */
@@ -231,12 +266,14 @@ function displayCoffeeShops() {
         
         shopElement.innerHTML = `
             <h3>${shop.name}</h3>
-            <p><strong>Address:</strong> ${shop.address}</p>
-            <p><strong>Rating:</strong> <span class="rating">${shop.rating}/5 ⭐</span></p>
-            <p><strong>Distance:</strong> <span class="distance">${shop.distance}</span></p>
-            <p><strong>Status:</strong> ${shop.openNow ? '🟢 Open Now' : '🔴 Closed'}</p>
+            ${shop.address ? `<p><strong>Address:</strong> ${shop.address}</p>` : ''}
+            ${shop.openingHours ? `<p><strong>Opening Hours:</strong> ${shop.openingHours}</p>` : ''}
+            ${shop.phone ? `<p><strong>Phone:</strong> ${shop.phone}</p>` : ''}
+            ${shop.website ? `<p><strong>Website:</strong> <a href="${shop.website}" target="_blank">${shop.website}</a></p>` : ''}
+            ${shop.rating ? `<p><strong>Rating:</strong> <span class="rating">${shop.rating}/5 ⭐</span></p>` : ''}
+            ${shop.distance ? `<p><strong>Distance:</strong> <span class="distance">${shop.distance}</span></p>` : ''}
+            <p><strong>Status:</strong> ${getStatusDisplay(shop.openNow)}</p>
         `;
-        
         coffeeShopsDiv.appendChild(shopElement);
     });
 }
