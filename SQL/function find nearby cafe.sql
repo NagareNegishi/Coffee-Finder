@@ -5,8 +5,8 @@ CREATE OR REPLACE FUNCTION find_nearby_cafe(
     -- Parameters for the search
     search_lat DECIMAL,
     search_lon DECIMAL,
-    radius_km DECIMAL DEFAULT 2.0 -- Default radius of 2 km
-    limit INTEGER DEFAULT 10 -- Default limit of 10 results
+    radius_km DECIMAL DEFAULT 2.0, -- Default radius of 2 km
+    max_results INTEGER DEFAULT 10 -- Default limit of 10 results
 ) RETURNS TABLE (
     -- Return columns
     id INTEGER,
@@ -56,7 +56,7 @@ BEGIN
             sin(radians(search_lat)) * sin(radians(cs.latitude))
         )) <= radius_km
     ORDER BY distance_km
-    LIMIT limit;
+    LIMIT max_results;
 END;
 $$ -- Function body end
 LANGUAGE plpgsql; -- Specify the language as PL/pgSQL.

@@ -1,3 +1,9 @@
+import { createClient } from '@supabase/supabase-js';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+
 let userLocation = null;
 let coffeeShops = [];
 
@@ -100,6 +106,7 @@ function getUserLocation() {
 //         }, 1000);
 //     });
 // }
+
 
 /**
  * Passe the address tags from OpenStreetMap and build a formatted address string.
