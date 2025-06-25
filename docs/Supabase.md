@@ -13,3 +13,16 @@ Simply put initializing requires following steps:
     const supabaseUrl = ???????
     const supabaseKey = ???????
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+How to use the Supabase client:
+
+supabase variable created from createClient() is supabase client object that you can use to interact with your Supabase project.
+
+supabase.from('table_name')
+    .select()          // Read data
+    .insert()          // Insert new data
+    .update()          // Update existing data
+    .upsert()          // Insert or update
+    .delete()          // Delete data
+

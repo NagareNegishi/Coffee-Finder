@@ -1,8 +1,8 @@
+// supabase setup
 import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
 
 let userLocation = null;
 let coffeeShops = [];
@@ -74,40 +74,6 @@ function getUserLocation() {
     });
 }
 
-// // Mock function to simulate fetching coffee shops data
-// // In a real application, this would call the Google Places API or similar service
-// function getMockCoffeeShops() {
-//     return new Promise((resolve) => {
-//         setTimeout(() => {
-//             const mockShops = [
-//                 {
-//                     name: "Starbucks Coffee",
-//                     address: "123 Main Street",
-//                     rating: 4.2,
-//                     distance: "0.3 km",
-//                     openNow: true
-//                 },
-//                 {
-//                     name: "Local Coffee House",
-//                     address: "456 Oak Avenue",
-//                     rating: 4.7,
-//                     distance: "0.5 km",
-//                     openNow: true
-//                 },
-//                 {
-//                     name: "Café Mocha",
-//                     address: "789 Pine Street",
-//                     rating: 4.0,
-//                     distance: "0.8 km",
-//                     openNow: false
-//                 }
-//             ];
-//             resolve(mockShops);
-//         }, 1000);
-//     });
-// }
-
-
 /**
  * Passe the address tags from OpenStreetMap and build a formatted address string.
  * @param {Object} tags - The tags may contain address information.
@@ -170,24 +136,58 @@ function parseOverpassData(overpassData, userLocation) {
         // Additional information
         const phone = tags.phone || tags.mobile || null;
         const website = tags.website || null;
+        const suburb = tags['addr:suburb'] || null;
+        const city = tags['addr:city'] || null;
 
-        return {
+        return { // use the same format as the database schema
+            osm_id: element.id, // OpenStreetMap ID
+            osm_type: element.type, // 'node' or 'way'
             name: name,
-            lat: lat,
-            lon: lon,
+            latitude: lat,
+            longitude: lon,
             address: address,
-            openingHours: openingHours,
+            opening_hours: openingHours,
             phone: phone,
             website: website,
-            id: element.id,
-            type: element.type
+            suburb: suburb,
+            city: city,
         };
     }).filter(shop => shop !== null); // Filter out any null entries
     console.log('Parsed coffee shops:', coffeeShops);
     return coffeeShops;
 }
 
+/**
+ * Save coffee shops to the database using Supabase.
+ * @param {*} coffeeShops
+ * @returns  {Promise<{success: boolean, data?: Array, error?: string}>}
+ */
+async function saveCoffeeShopsToDatabase(coffeeShops) {
+    if (!coffeeShops || coffeeShops.length === 0) {
+        console.warn('No coffee shops to save to the database');
+        return;
+    }
+    try {
+        const { data, error } = await supabase
+            .from('coffee_shops')
+            // upsert: Insert new records or update existing ones based on the primary key
+            .upsert(coffeeShops, {
+                onConflict: 'osm_type, osm_id', // Use osm_id and osm_type as the conflict target
+                ignoreDuplicates: false // update existing records
+            })
+            .select();
 
+        if (error) {
+            console.error('Error saving coffee shops to database:', error);
+            throw error;
+        }
+        console.log(data.length, ' Coffee shops saved to database');
+        return { success: true, data: data };
+    } catch (error) {
+        console.error('Error saving coffee shops to database:', error);
+        return { success: false, error: error.message };
+    }
+}
 
 
 
@@ -235,9 +235,12 @@ async function searchCoffeeShops(radius = 500) {
         // Parse the data from Overpass API
         coffeeShops = parseOverpassData(data, userLocation);
 
-
-        // mock data for now!!!!
-        //coffeeShops = await getMockCoffeeShops();
+        const saveResult = await saveCoffeeShopsToDatabase(coffeeShops);
+        if (saveResult.success) {
+            console.log('Coffee shops saved to database successfully');
+        } else {
+            console.error('Failed to save coffee shops to database:', saveResult.error);
+        }
         
         displayCoffeeShops();
         showStatus(`Found ${coffeeShops.length} coffee shops nearby`, 'success');
