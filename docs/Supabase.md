@@ -26,3 +26,14 @@ supabase.from('table_name')
     .upsert()          // Insert or update
     .delete()          // Delete data
 
+also it can use .rpc() to call remote procedures (functions) defined in your Supabase database.
+how .rpc() works:
+```javascript
+    const { data, error } = await supabase
+        .rpc('function_name', { param1: value1, param2: value2 });
+    if (error) {
+        console.error('Error calling function:', error);
+    } else {
+        console.log('Function result:', data);
+    }
+```

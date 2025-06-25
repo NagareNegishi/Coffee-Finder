@@ -191,7 +191,32 @@ async function saveCoffeeShopsToDatabase(coffeeShops) {
 
 
 
-
+/**
+ * Get coffee shops from the database using Supabase.
+ * @param {*} radius
+ * @param {*} max_results
+ * @returns {Promise<Array>} A promise that resolves with an array of coffee shops.
+ * @throws {Error} If there is an error fetching data from the database.
+ */
+async function getCoffeeShopsFromDatabase(radius = 2.0, max_results = 10) {
+    try {
+        const { data, error } = await supabase
+            .rpc('find_nearby_cafe', {
+                search_lat: userLocation.lat,
+                search_lon: userLocation.lon,
+                radius_km: radius,
+                max_results: max_results
+            });
+        if (error) {
+            console.error('Error fetching coffee shops from database:', error);
+            throw error;
+        }
+        return data;
+    }  catch (error) {
+        console.error('Error fetching coffee shops from database:', error);
+        return [];
+    }
+}
 
 
 
@@ -240,6 +265,12 @@ async function searchCoffeeShops(radius = 500) {
             console.log('Coffee shops saved to database successfully');
         } else {
             console.error('Failed to save coffee shops to database:', saveResult.error);
+        }
+
+        coffeeShops = await getCoffeeShopsFromDatabase(radius / 1000, 10);
+        if (coffeeShops.length === 0) {
+            showStatus('No coffee shops found nearby', 'warning');
+            return;
         }
         
         displayCoffeeShops();

@@ -3,9 +3,9 @@
 */
 CREATE OR REPLACE FUNCTION find_nearby_cafe(
     -- Parameters for the search
-    search_lat DECIMAL,
-    search_lon DECIMAL,
-    radius_km DECIMAL DEFAULT 2.0, -- Default radius of 2 km
+    search_lat DOUBLE PRECISION,
+    search_lon DOUBLE PRECISION,
+    radius_km DOUBLE PRECISION DEFAULT 2.0, -- Default radius of 2 km
     max_results INTEGER DEFAULT 10 -- Default limit of 10 results
 ) RETURNS TABLE (
     -- Return columns
@@ -13,15 +13,15 @@ CREATE OR REPLACE FUNCTION find_nearby_cafe(
     osm_id BIGINT,
     osm_type VARCHAR,
     name VARCHAR,
-    latitude DECIMAL,
-    longitude DECIMAL,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
     address TEXT,
     opening_hours TEXT,
     phone VARCHAR,
     website VARCHAR,
     suburb VARCHAR,
     city VARCHAR,
-    distance_km DECIMAL
+    distance_km DOUBLE PRECISION
 ) AS $$ -- Function body start
 BEGIN
     RETURN QUERY

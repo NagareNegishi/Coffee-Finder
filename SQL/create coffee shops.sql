@@ -7,8 +7,8 @@ CREATE TABLE coffee_shops (
     osm_id BIGINT NOT NULL, -- identifier for OpenStreetMap, maximum digits for way is 15, so int is insufficient
     osm_type VARCHAR(10) NOT NULL, -- only expect 'node' and 'way', so can be shorter
     name VARCHAR(255) NOT NULL,
-    latitude DECIMAL(10, 8) NOT NULL, -- 2 + 8 is maximum for latitude
-    longitude DECIMAL(11, 8) NOT NULL, -- 3 + 8 is maximum for longitude
+    latitude DOUBLE PRECISION NOT NULL, -- 2 + 8 is maximum for latitude
+    longitude DOUBLE PRECISION NOT NULL, -- 3 + 8 is maximum for longitude
     address TEXT,
     opening_hours TEXT,
     phone VARCHAR(20),
