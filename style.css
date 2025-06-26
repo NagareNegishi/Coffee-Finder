@@ -107,3 +107,28 @@ button:disabled {
     border: 1px solid #ddd;
     border-radius: 8px;
 }
+
+.location-options {
+    display: flex;
+    gap: 20px; /* Space between radio buttons */
+    justify-content: center;
+    margin: 15px 0;
+}
+
+.location-options label {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between radio and text */
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.location-options label:hover {
+    background-color: #f0f0f0;
+}
+
+.location-options input[type="radio"] {
+    margin: 0;
+}

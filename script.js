@@ -383,7 +383,7 @@ async function findCoffeeShops() {
         findBtn.textContent = 'Searching...';
         
         // Get user location
-        await getUserLocation();
+        await getLocation();
         showStatus(`Location found: ${userLocation.lat.toFixed(4)}, ${userLocation.lon.toFixed(4)}`, 'success');
         
         // Search for coffee shops
@@ -397,6 +397,28 @@ async function findCoffeeShops() {
         findBtn.textContent = 'Find Coffee Shops';
     }
 }
+
+/**
+ * Get the selected location mode from the radio buttons.
+ */
+async function getLocation(){
+    const mode = document.querySelector('input[name="locationMode"]:checked').value;
+    if (mode === 'current') {
+        await getUserLocation();
+    } else {
+        const center = map.getCenter();
+        userLocation = {
+            lat: center.lat,
+            lon: center.lng
+        };
+    }
+}
+
+
+
+
+
+
 
 /**
  * Add markers to the map for each coffee shop found.
