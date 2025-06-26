@@ -399,7 +399,9 @@ async function findCoffeeShops() {
 }
 
 /**
- * Get the selected location mode from the radio buttons.
+ * Get the location based on the user's choice.
+ * If the user chooses "Current Location", it will use the Geolocation API.
+ * If the user chooses "Map Center", it will use the center of the map.
  */
 async function getLocation(){
     const mode = document.querySelector('input[name="locationMode"]:checked').value;
@@ -413,12 +415,6 @@ async function getLocation(){
         };
     }
 }
-
-
-
-
-
-
 
 /**
  * Add markers to the map for each coffee shop found.
