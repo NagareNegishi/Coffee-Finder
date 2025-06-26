@@ -4,16 +4,15 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Parameters
 let userLocation = null;
 let coffeeShops = [];
-
-// DOM element
-const findBtn = document.getElementById('findCoffeeBtn');
-const statusDiv = document.getElementById('status');
-const coffeeShopsDiv = document.getElementById('coffeeShops');
+let map = null;
+let markers = [];
 
 // Status message display
 function showStatus(message, type = 'loading') {
+    const statusDiv = document.getElementById('status');
     statusDiv.textContent = message;
     statusDiv.className = `status ${type}`;
     statusDiv.style.display = 'block';
@@ -21,6 +20,7 @@ function showStatus(message, type = 'loading') {
 
 // Hide status message
 function hideStatus() {
+    const statusDiv = document.getElementById('status');
     statusDiv.style.display = 'none';
 }
 
@@ -226,7 +226,7 @@ async function getCoffeeShopsFromDatabase(radius = 2.0, max_results = 10) {
  * @param {number} maxResults - The maximum number of results to return (default is  20).
  * @returns {Promise<void>} A promise that resolves when the search is complete.
  */
-async function searchCoffeeShops(radius = 2000, minResults = 5, maxResults = 20) {
+async function searchCoffeeShops(radius = 5000, minResults = 5, maxResults = 20) {
     try {
         showStatus('Searching for coffee shops...', 'loading');
 
@@ -250,8 +250,11 @@ async function searchCoffeeShops(radius = 2000, minResults = 5, maxResults = 20)
             showStatus('No coffee shops found nearby', 'warning');
             return;
         }
-        
+
+        // Then get the data from the database again, the results is sorted by distance
+        coffeeShops = await getCoffeeShopsFromDatabase(radius / 1000, maxResults);
         displayCoffeeShops();
+        addMarker();
         showStatus(`Found ${coffeeShops.length} coffee shops nearby`, 'success');
         
     } catch (error) {
@@ -293,10 +296,10 @@ async function fetchFromOSM(radius) {
         (
             node["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
             way["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-            // node["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-            // way["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-            // node["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-            // way["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+            node["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+            way["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+            node["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+            way["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
         );
         out center;
     `;
@@ -312,6 +315,8 @@ async function fetchFromOSM(radius) {
     }
     const data = await response.json();
 
+    console.log('Overpass API response:', data);
+
     // Parse the data from Overpass API
     return parseOverpassData(data, userLocation);
 }
@@ -320,6 +325,7 @@ async function fetchFromOSM(radius) {
  * Display the list of coffee shops in the UI.
  */
 function displayCoffeeShops() {
+    const coffeeShopsDiv = document.getElementById('coffeeShops');
     coffeeShopsDiv.innerHTML = '';
     
     coffeeShops.forEach(shop => {
@@ -371,6 +377,7 @@ function getStatusDisplay(openNow) {
  * @returns {Promise<void>} A promise that resolves when the search is complete.
  */
 async function findCoffeeShops() {
+    const findBtn = document.getElementById('findCoffeeBtn');
     try {
         findBtn.disabled = true; // Prevent multiple clicks
         findBtn.textContent = 'Searching...';
@@ -391,9 +398,69 @@ async function findCoffeeShops() {
     }
 }
 
-// Event listener for the "Find Coffee Shops" button
-findBtn.addEventListener('click', findCoffeeShops);
+/**
+ * Add markers to the map for each coffee shop found.
+ */
+function addMarker(){
+    if (coffeeShops.length === 0) return;
 
-// Initial setup
-console.log('Coffee Finder initialized');
-console.log('Click "Find Coffee Shops" to start searching');
+    // clear existing markers
+    markers.forEach(marker => {
+        map.removeLayer(marker);
+    });
+    markers = []; // reset markers array
+
+    // Add markers for each coffee shop
+    coffeeShops.forEach(shop => {
+        // first add marker to the map
+        const marker = L.marker([shop.latitude, shop.longitude]).addTo(map);
+        
+        // then add the popup to the marker
+        marker.bindPopup(`
+            <strong>${shop.name}</strong><br>
+            ${shop.address ? `<p>${shop.address}</p>` : ''}
+            ${shop.opening_hours ? `<p>Opening Hours: ${shop.opening_hours}</p>` : ''}
+            ${shop.phone ? `<p>Phone: ${shop.phone}</p>` : ''}
+            ${shop.website ? `<p>Website: <a href="${shop.website}" target="_blank">${shop.website}</a></p>` : ''}
+        `);
+        markers.push(marker); // add marker to the markers array
+    }
+    );
+
+    // If there are markers, fit the map bounds to show all markers
+    // Since our search is radius based, we will not get markers that are too far away
+    if (markers.length > 0) {
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.1));
+    }
+}
+
+/**
+ *  Initialize the map with the center of London
+ */
+function initMap() {
+    map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+}
+
+// Initialize the map and set up event listeners when the DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the map when the DOM is ready
+    initMap();
+    console.log('Map initialized');
+    // Event listener for the "Find Coffee Shops" button
+    const findBtn = document.getElementById('findCoffeeBtn');
+    findBtn.addEventListener('click', findCoffeeShops);
+    // Initial setup
+    console.log('Coffee Finder initialized');
+});
+
+
+
+
+
+
+
