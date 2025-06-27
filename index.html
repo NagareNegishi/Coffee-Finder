@@ -14,6 +14,45 @@
 </head>
 <body>
     <div class="container">
+
+        <!-- Simple Hamburger Button -->
+        <button class="menu-button" onclick="toggleSettings()">
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+        </button>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel show">
+            <h3>🔧 Search Settings</h3>
+            
+            <div class="setting-item">
+                <label>Search radius: <span id="radiusDisplay">2.0 km</span></label>
+                <input type="range" id="radiusSlider" min="500" max="5000" value="2000" step="500" oninput="updateRadius()">
+                <small>Distance to search for coffee shops</small>
+            </div>
+            
+            <div class="setting-item">
+                <label>Show places open:</label>
+                <select id="openingFilter">
+                    <option value="anytime">Anytime</option>
+                    <option value="now">Right now</option>
+                </select>
+                <small>Filter by opening hours</small>
+            </div>
+            
+            <div class="setting-item">
+                <label>Max results:</label>
+                <select id="maxResults">
+                    <option value="10">10 shops</option>
+                    <option value="20" selected>20 shops</option>
+                    <option value="50">50 shops</option>
+                </select>
+                <small>Maximum number to display</small>
+            </div>
+        </div>
+
+
         <h1>☕ Coffee Finder</h1>
         
         <div class="search-section">

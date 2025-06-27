@@ -132,3 +132,99 @@ button:disabled {
 .location-options input[type="radio"] {
     margin: 0;
 }
+
+.menu-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #8B4513;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-button:hover {
+    background-color: #A0522D;
+}
+
+.hamburger-line {
+    width: 20px;
+    height: 3px;
+    background-color: white;
+    margin: 2px 0;
+    border-radius: 1px;
+}
+
+.settings-panel {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: 280px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.settings-panel.show {
+    display: block;
+}
+
+.settings-panel h3 {
+    color: #8B4513;
+    margin: 0 0 15px 0;
+    font-size: 16px;
+}
+
+.setting-item {
+    margin-bottom: 15px;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+}
+
+.setting-item select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    color: #333;
+    margin: 0;
+}
+
+
+.setting-item input[type="range"] {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+}
+
+.setting-item small {
+    color: #666;
+    font-size: 12px;
+}
+
+#radiusDisplay {
+    color: #8B4513;
+    font-weight: bold;
+}
