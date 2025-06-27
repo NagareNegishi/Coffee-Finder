@@ -11,7 +11,7 @@ CREATE TABLE coffee_shops (
     longitude DOUBLE PRECISION NOT NULL, -- 3 + 8 is maximum for longitude
     address TEXT,
     opening_hours TEXT,
-    phone VARCHAR(20),
+    phone VARCHAR(50), -- initially set to 20, but increased it to 50 as some phone numbers can be longer
     website VARCHAR(255),
     suburb VARCHAR(100),
     city VARCHAR(100),

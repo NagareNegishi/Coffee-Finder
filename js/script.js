@@ -1,3 +1,13 @@
+/**
+ * Currently not used, but kept for reference.
+ * Before refactoring.
+ * This is original code for the Coffee Finder application.
+ * It was a single file that handled everything.
+ */
+
+
+
+
 // supabase setup
 import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
