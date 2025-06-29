@@ -133,8 +133,8 @@ button:disabled {
     margin: 0;
 }
 
-.menu-button {
-    position: absolute;
+.hamburger-button {
+    position: fixed;
     top: 10px;
     left: 10px;
     background-color: #8B4513;
@@ -150,9 +150,10 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    z-index: 2000;
 }
 
-.menu-button:hover {
+.hamburger-button:hover {
     background-color: #A0522D;
 }
 
@@ -166,7 +167,7 @@ button:disabled {
 
 .settings-panel {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 60px;
     left: 10px;
     background: white;
@@ -175,7 +176,7 @@ button:disabled {
     padding: 20px;
     width: 280px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    z-index: 1000;
+    z-index: 1500; /* Ensure it appears above other content */
 }
 
 .settings-panel.show {
@@ -186,6 +187,7 @@ button:disabled {
     color: #8B4513;
     margin: 0 0 15px 0;
     font-size: 16px;
+    text-align: center;
 }
 
 .setting-item {
@@ -227,4 +229,14 @@ button:disabled {
 #radiusDisplay {
     color: #8B4513;
     font-weight: bold;
+}
+
+/* control transition for leaflet interactive elements */
+.leaflet-interactive {
+    transition: all 0.3s ease !important;
+    
+}
+/* Disable transition (Zoom animation is not natural) */
+.leaflet-interactive.no-transition {
+    transition: none !important;
 }

@@ -16,19 +16,19 @@
     <div class="container">
 
         <!-- Simple Hamburger Button -->
-        <button class="menu-button" onclick="toggleSettings()">
+        <button class="hamburger-button" id = "hamburgerButton">
             <div class="hamburger-line"></div>
             <div class="hamburger-line"></div>
             <div class="hamburger-line"></div>
         </button>
 
         <!-- Settings Panel -->
-        <div id="settingsPanel" class="settings-panel show">
-            <h3>🔧 Search Settings</h3>
+        <div id="settingsPanel" class="settings-panel"> <!-- Initially hidden, will be toggled by the button -->
+            <h3>Search Settings</h3>
             
             <div class="setting-item">
                 <label>Search radius: <span id="radiusDisplay">2.0 km</span></label>
-                <input type="range" id="radiusSlider" min="500" max="5000" value="2000" step="500" oninput="updateRadius()">
+                <input type="range" id="radiusSlider" min="500" max="5000" value="2000" step="50">
                 <small>Distance to search for coffee shops</small>
             </div>
             

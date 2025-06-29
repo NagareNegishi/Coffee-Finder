@@ -1,15 +1,11 @@
 // js/main.js
-import { CONFIG } from './config.js';
 import { DatabaseService } from './services/databaseService.js';
 import { LocationService } from './services/locationService.js';
 import { MapService } from './services/mapService.js';
 import { OSMService } from './services/osmService.js';
 import { UIService } from './services/uiService.js';
 
-// Add this line temporarily to prevent deletion
-console.log('Config loaded:', CONFIG);
 
-// Global variables (we'll move these to services later)
 let userLocation = null;
 let coffeeShops = [];
 
@@ -77,7 +73,8 @@ async function findCoffeeShops() {
         UIService.showStatus(`Location found: ${userLocation.lat.toFixed(4)}, ${userLocation.lon.toFixed(4)}`, 'success');
         
         // Search for coffee shops
-        await searchCoffeeShops();
+        const settings = UIService.getSettings();
+        await searchCoffeeShops(settings.radius, 5, settings.maxResults);
         
     } catch (error) {
         UIService.showStatus(`Error: ${error.message}`, 'error');
@@ -96,6 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listener for the "Find Coffee Shops" button
     const findBtn = document.getElementById('findCoffeeBtn');
     findBtn.addEventListener('click', findCoffeeShops);
+
+    document.getElementById('hamburgerButton').addEventListener('click', UIService.toggleSettingsPanel);
+    document.getElementById('radiusSlider').addEventListener('input', UIService.updateRadius);
+    document.getElementById('openingFilter').addEventListener('change', UIService.updateOpeningFilter);
+    document.getElementById('maxResults').addEventListener('change', UIService.updateMaxResults);
+
     // Initial setup
     console.log('Coffee Finder initialized');
 });

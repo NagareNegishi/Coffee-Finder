@@ -1,4 +1,17 @@
+import { MapService } from './mapService.js';
 export class UIService {
+
+    // Static settings for the UIService
+    static settings = {
+        radius: 2000,
+        openingFilter: 'anytime',
+        maxResults: 20
+    }
+
+    // Static method to get the current settings
+    static getSettings() {
+        return UIService.settings;
+    }
 
     /**
      * Show a status message to the user.
@@ -67,4 +80,43 @@ export class UIService {
         if (openNow === false) return '🔴 Closed';
         return '🟡 Unknown';
     }
+
+    /**
+     * Toggle the visibility of the settings panel.
+     */
+    static toggleSettingsPanel() {
+        const settingsPanel = document.getElementById('settingsPanel');
+        settingsPanel.classList.toggle('show');
+    }
+
+    /**
+     * Update the radius display based on the slider value.
+     */
+    static updateRadius() {
+        const radiusSlider = document.getElementById('radiusSlider');
+        const radiusDisplay = document.getElementById('radiusDisplay');
+        UIService.settings.radius = radiusSlider.value;
+        radiusDisplay.textContent = `${(UIService.settings.radius / 1000).toFixed(1)} km`;
+
+        const center = MapService.map.getCenter();
+        MapService.updateCircle(center, UIService.settings.radius);
+    }
+
+    /**
+     * Update the opening filter setting based on the selected value.
+     */
+    static updateOpeningFilter() {
+        const openingFilter = document.getElementById('openingFilter');
+        UIService.settings.openingFilter = openingFilter.value;
+    }
+
+    /**
+     * Update the maximum results setting based on the input value.
+     */
+    static updateMaxResults() {
+        const maxResultsInput = document.getElementById('maxResults');
+        UIService.settings.maxResults = parseInt(maxResultsInput.value);
+    }
+
+
 }

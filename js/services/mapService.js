@@ -3,16 +3,78 @@ export class MapService {
     // Static properties for the MapService
     static map = null;
     static markers = [];
+    static searchCircle = null;
 
     /**
      *  Initialize the map with the center of London
      */
     static initMap() {
-        MapService.map = L.map('map').setView([51.505, -0.09], 13);
+        MapService.map = L.map('map', {
+            minZoom: 5, // prevent zooming out too far
+            maxZoom: 18,
+        }).setView([51.505, -0.09], 13);
+
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(MapService.map);
+
+        MapService.addCircle({ lat: 51.505, lng: -0.09 }, 2000); // Default circle for London
+
+        // Disable transition during zoom
+        MapService.map.on('zoomstart', () => {
+            const elements = document.querySelectorAll('.leaflet-interactive');
+            elements.forEach(el => el.classList.add('no-transition'));
+        });
+        
+        // Re-enable transition after zoom
+        MapService.map.on('zoomend', () => {
+            setTimeout(() => {
+                const elements = document.querySelectorAll('.leaflet-interactive');
+                elements.forEach(el => el.classList.remove('no-transition'));
+            }, 10);
+        });
+
+        MapService.map.on('moveend', () => {
+            // Update the circle position when the map is moved
+            if (MapService.searchCircle) {
+                const center = MapService.map.getCenter();
+                MapService.updateCircle(center, MapService.searchCircle.getRadius());
+            }
+        });
+    }
+
+    /**
+     * Add a circle to the map representing the search radius.
+     * @param {Object} center - The center of the circle, could be a { lat, lng } object
+     * @param {number} radius - The radius in meters
+     */
+    static addCircle(center, radius) {
+        MapService.removeCircle();
+        MapService.searchCircle = L.circle([center.lat, center.lng], {
+            color: '#4A90E2',
+            weight: 2,
+            opacity: 0.6,
+            fillColor: '#30f',
+            fillOpacity: 0.1,
+            radius: radius
+        }).addTo(MapService.map);
+    }
+
+    // Update the existing circle with a new center and radius
+    static updateCircle(center,radius) {
+        if (MapService.searchCircle) {
+            MapService.searchCircle.setLatLng([center.lat, center.lng]);
+            MapService.searchCircle.setRadius(radius);
+        }
+    }
+
+    // Remove the existing circle if it exists
+    static removeCircle() {
+        if (MapService.searchCircle) {
+            MapService.map.removeLayer(MapService.searchCircle);
+            MapService.searchCircle = null;
+        }
     }
 
     /**
