@@ -22,6 +22,7 @@ let coffeeShops = [];
 async function searchCoffeeShops(radius = 5000, minResults = 5, maxResults = 20) {
     try {
         UIService.showStatus('Searching for coffee shops...', 'loading');
+        MapService.showSearchLoading(); // Show loading overlay while searching
 
         // first, try to get coffee shops from the database
         coffeeShops = await DatabaseService.getCoffeeShopsFromDatabase(userLocation, radius / 1000,  maxResults);
@@ -53,6 +54,8 @@ async function searchCoffeeShops(radius = 5000, minResults = 5, maxResults = 20)
     } catch (error) {
         UIService.showStatus(`Error: ${error.message}`, 'error');
         console.error('Search error:', error);
+    } finally {
+        MapService.hideSearchLoading(); // Hide loading overlay after searching
     }
 }
 

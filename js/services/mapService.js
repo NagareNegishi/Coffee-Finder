@@ -44,6 +44,44 @@ export class MapService {
         });
     }
 
+    // Disable map interaction methods
+    static disableMapInteraction() {
+        if (MapService.map) {
+            MapService.map.dragging.disable();
+            MapService.map.touchZoom.disable();
+            MapService.map.doubleClickZoom.disable();
+            MapService.map.scrollWheelZoom.disable();
+            MapService.map.boxZoom.disable();
+            MapService.map.keyboard.disable();
+        }
+    }
+    // Enable map interaction methods
+    static enableMapInteraction() {
+        if (MapService.map) {
+            MapService.map.dragging.enable();
+            MapService.map.touchZoom.enable();
+            MapService.map.doubleClickZoom.enable();
+            MapService.map.scrollWheelZoom.enable();
+            MapService.map.boxZoom.enable();
+            MapService.map.keyboard.enable();
+        }
+    }
+
+    // Show loading overlay with a message
+    static showSearchLoading() {
+        const overlay = document.getElementById('mapLoadingOverlay');
+        const text = overlay.querySelector('.map-loading-text');
+        text.textContent = 'Searching for coffee shops...';
+        overlay.style.display = 'flex';
+        MapService.disableMapInteraction();
+    }
+
+    // Hide the loading overlay
+    static hideSearchLoading() {
+        document.getElementById('mapLoadingOverlay').style.display = 'none';
+        MapService.enableMapInteraction();
+    }
+
     /**
      * Add a circle to the map representing the search radius.
      * @param {Object} center - The center of the circle, could be a { lat, lng } object
@@ -56,7 +94,7 @@ export class MapService {
             weight: 2,
             opacity: 0.6,
             fillColor: '#30f',
-            fillOpacity: 0.1,
+            fillOpacity: 0.05,
             radius: radius
         }).addTo(MapService.map);
     }
