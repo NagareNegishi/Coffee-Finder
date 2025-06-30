@@ -1,3 +1,5 @@
+import { CONFIG } from '../config.js';
+
 export class MapService {
     
     // Static properties for the MapService
@@ -10,12 +12,12 @@ export class MapService {
      */
     static initMap() {
         MapService.map = L.map('map', {
-            minZoom: 5, // prevent zooming out too far
-            maxZoom: 18,
-        }).setView([51.505, -0.09], 13);
+            minZoom: CONFIG.map.minZoom, // prevent zooming out too far
+            maxZoom: CONFIG.map.maxZoom, // prevent zooming in too far
+        }).setView(CONFIG.map.defaultCenter, CONFIG.map.defaultZoom);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
+            maxZoom: CONFIG.map.maxZoom,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(MapService.map);
 
@@ -80,6 +82,16 @@ export class MapService {
     static hideSearchLoading() {
         document.getElementById('mapLoadingOverlay').style.display = 'none';
         MapService.enableMapInteraction();
+    }
+
+    // Update the center of the map
+    static updateMapCenter(location) {
+        if (MapService.map && location) {
+            MapService.map.setView([location.lat, location.lon], MapService.map.getZoom());
+            console.log(`Map center updated to: ${location.lat}, ${location.lon}`);
+        } else {
+            console.error('Map is not initialized or location is invalid.');
+        }
     }
 
     /**

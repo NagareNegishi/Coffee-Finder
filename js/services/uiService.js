@@ -1,4 +1,5 @@
 import { MapService } from './mapService.js';
+
 export class UIService {
 
     // Static settings for the UIService

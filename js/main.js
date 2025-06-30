@@ -88,19 +88,47 @@ async function findCoffeeShops() {
     }
 }
 
+/**
+ * Switch the location mode based on user selection.
+ * If no permission is granted for the current location,
+ * it will switch to the map mode.
+ */
+async function switchLocationMode() {
+    UIService.hideStatus();
+    const mode = document.querySelector('input[name="locationMode"]:checked').value;
+    if (mode === 'current') {
+        const result = await LocationService.requestLocation();
+        if (result.success) {
+            userLocation = result.location;
+            MapService.updateMapCenter(userLocation);
+        } else {
+            const mapMode = document.querySelector('input[name="locationMode"][value="map"]');
+            if (mapMode) {
+                mapMode.checked = true;
+            }
+            UIService.showStatus('Current location access denied, switching to map mode', 'error');
+        }
+    }
+}
+
+
 // Initialize the map and set up event listeners when the DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Initialize the map when the DOM is ready
     MapService.initMap();
     console.log('Map initialized');
-    // Event listener for the "Find Coffee Shops" button
-    const findBtn = document.getElementById('findCoffeeBtn');
-    findBtn.addEventListener('click', findCoffeeShops);
 
+    await switchLocationMode();
+
+    // Event listeners
+    document.getElementById('findCoffeeBtn').addEventListener('click', findCoffeeShops);
     document.getElementById('hamburgerButton').addEventListener('click', UIService.toggleSettingsPanel);
     document.getElementById('radiusSlider').addEventListener('input', UIService.updateRadius);
     document.getElementById('openingFilter').addEventListener('change', UIService.updateOpeningFilter);
     document.getElementById('maxResults').addEventListener('change', UIService.updateMaxResults);
+    document.querySelectorAll('input[name="locationMode"]').forEach(radio => {
+        radio.addEventListener('change', switchLocationMode);
+    });
 
     // Initial setup
     console.log('Coffee Finder initialized');

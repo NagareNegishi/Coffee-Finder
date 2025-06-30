@@ -2,6 +2,19 @@ import { CONFIG } from '../config.js';
 
 
 export class LocationService {
+    /**
+     * Request permission to access the user's location
+     */
+    static async requestLocation() {
+        try {
+            const location = await LocationService.getUserLocation();
+            return {success: true, location};
+        }
+        catch (error) {
+            console.log('Location access denied:', error.message);
+            return {success: false, error: error.message};
+        }
+    }
 
     /**
      * Ge5t the user's current location using the Geolocation API.
