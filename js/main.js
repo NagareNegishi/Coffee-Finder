@@ -2,9 +2,9 @@
 import { DatabaseService } from './services/databaseService.js';
 import { LocationService } from './services/locationService.js';
 import { MapService } from './services/mapService.js';
+import { OpeningHoursService } from './services/OpeningHoursService.js';
 import { OSMService } from './services/osmService.js';
 import { UIService } from './services/uiService.js';
-
 
 let userLocation = null;
 let coffeeShops = [];
@@ -47,6 +47,10 @@ async function searchCoffeeShops(radius = 5000, minResults = 5, maxResults = 20)
 
         // Then get the data from the database again, the results is sorted by distance
         coffeeShops = await DatabaseService.getCoffeeShopsFromDatabase(userLocation, radius / 1000, maxResults);
+        coffeeShops = OpeningHoursService.addOpenNow(coffeeShops); // Add open now status to each coffee shop
+        if (UIService.getSettings().openingFilter === 'now') {
+            coffeeShops = OpeningHoursService.filterOpenNow(coffeeShops, true);
+        }
         UIService.displayCoffeeShops(coffeeShops);
         MapService.addMarker(coffeeShops);
         UIService.showStatus(`Found ${coffeeShops.length} coffee shops nearby`, 'success');

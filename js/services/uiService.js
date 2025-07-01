@@ -47,7 +47,7 @@ export class UIService {
             shopElement.innerHTML = `
                 <h3>${shop.name}</h3>
                 ${shop.address ? `<p><strong>Address:</strong> ${shop.address}</p>` : ''}
-                ${shop.openingHours ? `<p><strong>Opening Hours:</strong> ${shop.openingHours}</p>` : ''}
+                ${shop.opening_hours ? `<p><strong>Opening Hours:</strong> ${shop.opening_hours}</p>` : ''}
                 ${shop.phone ? `<p><strong>Phone:</strong> ${shop.phone}</p>` : ''}
                 ${shop.website ? `<p><strong>Website:</strong> <a href="${shop.website}" target="_blank">${shop.website}</a></p>` : ''}
                 ${shop.rating ? `<p><strong>Rating:</strong> <span class="rating">${shop.rating}/5 ⭐</span></p>` : ''}
