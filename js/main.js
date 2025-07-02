@@ -115,7 +115,6 @@ async function switchLocationMode() {
     }
 }
 
-
 // Initialize the map and set up event listeners when the DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize the map when the DOM is ready

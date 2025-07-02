@@ -1,7 +1,6 @@
 import { MapService } from './mapService.js';
 
 export class UIService {
-
     // Static settings for the UIService
     static settings = {
         radius: 2000,
@@ -118,6 +117,4 @@ export class UIService {
         const maxResultsInput = document.getElementById('maxResults');
         UIService.settings.maxResults = parseInt(maxResultsInput.value);
     }
-
-
 }

@@ -1,6 +1,5 @@
 import { CONFIG } from '../config.js';
 
-
 export class LocationService {
     /**
      * Request permission to access the user's location

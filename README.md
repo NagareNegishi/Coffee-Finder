@@ -25,7 +25,7 @@ This project is a learning exercise focused on applying JavaScript fundamentals,
 ## 🛠️ Technologies Used
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **APIs**: 
+- **APIs**:
   - Browser Geolocation API
   - OpenStreetMap Overpass API
   - Leaflet for interactive maps
