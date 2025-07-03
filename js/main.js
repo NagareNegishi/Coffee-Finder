@@ -82,6 +82,9 @@ async function findCoffeeShops() {
         // Search for coffee shops
         const settings = UIService.getSettings();
         await searchCoffeeShops(settings.radius, 5, settings.maxResults);
+        // Log the search to the database, but do not await it
+        const mode = document.querySelector('input[name="locationMode"]:checked').value;
+        DatabaseService.logSearch(userLocation, mode, settings.radius / 1000)
         
     } catch (error) {
         UIService.showStatus(`Error: ${error.message}`, 'error');

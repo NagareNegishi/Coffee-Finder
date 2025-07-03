@@ -1,4 +1,6 @@
 /**
+* Replaced by `search logs` table.
+*
 * For future implementation:
 * collect search history for analytics, which can help identify popular search areas
 */

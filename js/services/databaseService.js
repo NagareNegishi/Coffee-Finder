@@ -82,4 +82,34 @@ export class DatabaseService {
             return age <= maxAge;
         });
     }
+
+    /**
+     * Log a search in the database.
+     * @param {*} userLocation
+     * @param {*} searchMode
+     * @param {*} radiusKm
+     * @returns {Promise<void>}
+     * @throws {Error} If there is an error logging the search.
+     */
+    static async logSearch(userLocation, searchMode, radiusKm) {
+        if (!userLocation || !searchMode || !radiusKm) {
+            console.warn('Invalid parameters for logging search');
+            return;
+        }
+        try {
+            const { error } = await supabase
+                .from('search_logs')
+                .insert({
+                    search_lat: userLocation.lat,
+                    search_lon: userLocation.lon,
+                    search_mode: searchMode,
+                    radius_km: radiusKm
+                });
+            if (error) {
+                console.error('Error logging search:', error);
+            }
+        } catch (error) {
+            console.error('Error logging search:', error);
+        }
+    }
 }
