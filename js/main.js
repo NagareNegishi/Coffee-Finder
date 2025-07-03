@@ -19,7 +19,7 @@ let coffeeShops = [];
  * @param {number} maxResults - The maximum number of results to return (default is  20).
  * @returns {Promise<void>} A promise that resolves when the search is complete.
  */
-async function searchCoffeeShops(radius = 5000, minResults = 5, maxResults = 20) {
+async function searchCoffeeShops(radius = 2000, minResults = 5, maxResults = 20) {
     try {
         UIService.showStatus('Searching for coffee shops...', 'loading');
         MapService.showSearchLoading(); // Show loading overlay while searching

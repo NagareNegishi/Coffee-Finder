@@ -119,4 +119,40 @@ export class OSMService {
         // Parse the data from Overpass API
         return OSMService.parseOverpassData(data);
     }
+
+
+    /**
+     * DO NOT USE THIS FUNCTION IN PRODUCTION!!!
+     *
+     * Fetch all coffee shops in New Zealand using Overpass API.
+     * This is special function for data collection.
+     */
+    static async fetchAllCoffeeShopsNZ(forceRun = false) {
+        if (!forceRun) {
+            throw new Error('Do not call this function without permission!');
+        }
+        const overpassQuery = `
+            [out:json][timeout:60];
+            (
+                area["ISO3166-1"="NZ"][admin_level=2];
+                (
+                    node["amenity"="cafe"](area);
+                    way["amenity"="cafe"](area);
+                    node["shop"="coffee"](area);
+                    way["shop"="coffee"](area);
+                    node["cuisine"="coffee_shop"](area);
+                    way["cuisine"="coffee_shop"](area);
+                );
+            );
+            out center;
+        `;
+        const response = await fetch('https://overpass-api.de/api/interpreter', {
+            method: 'POST',
+            body: overpassQuery
+        });
+    
+        const data = await response.json();
+        return OSMService.parseOverpassData(data);
+    }
+
 }
