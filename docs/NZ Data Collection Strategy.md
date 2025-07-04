@@ -60,3 +60,26 @@ console.log(`Found ${shops.length} coffee shops`);
 // Save to database
 await DatabaseService.saveCoffeeShopsToDatabase(shops);
 console.log('Data saved to database');
+```
+
+
+## Export the Data as CSV
+
+```sql
+-- Export coffee shops data
+SELECT
+    id, name, latitude, longitude, address,
+    opening_hours, phone, website, suburb, city,
+    created_at, updated_at
+FROM coffee_shops;
+
+-- Export search logs
+SELECT
+    id, timestamp, search_lat, search_lon,
+    search_mode, radius_km
+FROM search_logs;
+```
+
+## Data Visualization
+
+Use Tableau to visualize the coffee shop data
