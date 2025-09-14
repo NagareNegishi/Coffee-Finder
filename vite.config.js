@@ -1,5 +1,5 @@
 export default {
-	base: '/Coffee-Finder/',
+	base: './',
 	build: {
 		rollupOptions: {
 			input: './index.html'
