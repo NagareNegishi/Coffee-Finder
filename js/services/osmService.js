@@ -93,12 +93,12 @@ export class OSMService {
         const overpassQuery = `
             [out:json][timeout:25];
             (
-                node["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-                way["amenity"="cafe"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-                node["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-                way["shop"="coffee"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-                node["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
-                way["cuisine"="coffee_shop"](around:${radius}, ${userLocation.lat}, ${userLocation.lon});
+                node["amenity"="cafe"](around:${radius},${userLocation.lat},${userLocation.lon});
+                way["amenity"="cafe"](around:${radius},${userLocation.lat},${userLocation.lon});
+                node["shop"="coffee"](around:${radius},${userLocation.lat},${userLocation.lon});
+                way["shop"="coffee"](around:${radius},${userLocation.lat},${userLocation.lon});
+                node["cuisine"="coffee_shop"](around:${radius},${userLocation.lat},${userLocation.lon});
+                way["cuisine"="coffee_shop"](around:${radius},${userLocation.lat},${userLocation.lon});
             );
             out center;
         `;
