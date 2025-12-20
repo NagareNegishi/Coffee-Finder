@@ -7,6 +7,15 @@ ARG NODE_VERSION=22
 # Stage 1: Build the application
 FROM node:${NODE_VERSION}-alpine AS build
 WORKDIR /app
+
+# Accept build arguments from compose.yml
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+
+# Make them available as environment variables during build
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+
 # Copy package files (package.json and package-lock.json)
 COPY package*.json ./
 # Install ALL dependencies (including devDependencies for Vite)
