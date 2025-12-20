@@ -68,3 +68,37 @@ coffee-finder/
 4. Open `index.html` in a web browser
 5. Allow location access when prompted
 6. Click "Find Coffee Shops" to search for nearby cafes
+
+
+## 🐳 Docker Setup
+
+### Local Development with Docker
+
+This project can be run in a Docker container for consistent development environments.
+
+#### Prerequisites
+- Docker and Docker Compose installed
+- `.env` file with Supabase credentials:
+```env
+  VITE_SUPABASE_URL=your_supabase_url
+  VITE_SUPABASE_ANON_KEY=your_supabase_key
+```
+
+#### Running with Docker
+```bash
+# Build and start the container
+docker compose up --build
+
+# Access the app at http://localhost:3000
+
+# Stop the container
+docker compose down
+```
+
+#### Docker Architecture
+- **Stage 1**: Builds the Vite app with Node.js
+- **Stage 2**: Serves built files with nginx
+
+### Branch Structure
+- **`main`**: Source code with Docker setup for development
+- **`deploy`**: Built static files deployed to GitHub Pages
