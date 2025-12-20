@@ -4,7 +4,8 @@ A web application that helps users find coffee shops near their current location
 
 ## 📋 Project Overview
 
-This project is a learning exercise focused on applying JavaScript fundamentals, working with APIs, and database integration. The goal is to demonstrate practical web development skills.
+This project is a learning exercise focused on applying JavaScript fundamentals, working with APIs, database integration, and modern deployment workflows. The goal is to demonstrate practical web development skills from development to production.
+
 
 ## 🎯 Learning Objectives
 
@@ -13,6 +14,9 @@ This project is a learning exercise focused on applying JavaScript fundamentals,
 - **Database Integration**: Planning for PostgreSQL storage and data processing
 - **API Integration**: Working with OpenStreetMap's Overpass API
 - **User Experience**: Location-based services, responsive design, status feedback
+- **Build Tools**: Vite for modern development and optimized production builds
+- **Containerization**: Docker for consistent development environments
+
 
 ## 🚀 Features
 
@@ -21,10 +25,13 @@ This project is a learning exercise focused on applying JavaScript fundamentals,
 - **Interactive Display**: Shows coffee shops with ratings, distances, and opening status
 - **Error Handling**: Comprehensive error messages for location and API failures
 - **Responsive Design**: Clean, mobile-friendly interface
+- **Data Caching**: Stores results in Supabase to reduce API calls and improve performance
+
 
 ## 🛠️ Technologies Used
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Build Tool**: Vite for development server and production builds
 - **APIs**:
   - Browser Geolocation API
   - OpenStreetMap Overpass API
@@ -32,6 +39,9 @@ This project is a learning exercise focused on applying JavaScript fundamentals,
 - **Backend/Database**:
   - Supabase (PostgreSQL) for data storage and caching
   - pg_cron for automated data cleanup
+- **DevOps**:
+  - Docker & Docker Compose for containerized development
+  - GitHub Pages for production deployment
 
 
 ## 📁 Project Structure
