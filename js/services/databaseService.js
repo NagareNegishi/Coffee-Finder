@@ -84,6 +84,37 @@ export class DatabaseService {
     }
 
     /**
+     * Delete coffee shops from the database that are older than a specified number of days.
+     * Unlike filterOldResults (which only filters in memory), this actually removes stale records from the database.
+     * @param {number} maxDays - Maximum age in days before a record is deleted (default: 30).
+     * @returns {Promise<{success: boolean, deletedCount?: number, error?: string}>}
+     */
+    static async cleanUpOldCoffeeShops(maxDays = 30) {
+        try {
+            const MS_PER_DAY = 24 * 60 * 60 * 1000;
+            const cutoffDate = new Date(Date.now() - maxDays * MS_PER_DAY).toISOString();
+
+            const { data, error } = await supabase
+                .from('coffee_shops')
+                .delete()
+                .lt('updated_at', cutoffDate)
+                .select('osm_id'); // select to get count of deleted rows
+
+            if (error) {
+                console.error('Error cleaning up old coffee shops:', error);
+                throw error;
+            }
+
+            const deletedCount = data ? data.length : 0;
+            console.log(`Cleaned up ${deletedCount} coffee shops older than ${maxDays} days`);
+            return { success: true, deletedCount };
+        } catch (error) {
+            console.error('Error cleaning up old coffee shops:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
      * Log a search in the database.
      * @param {*} userLocation
      * @param {*} searchMode
