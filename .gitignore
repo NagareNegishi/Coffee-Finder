@@ -30,3 +30,6 @@ node_modules/
 # Build directories (if we add build tools later)
 dist/
 build/
+
+# Note about deployment
+PROJECT_CONFIG.md
