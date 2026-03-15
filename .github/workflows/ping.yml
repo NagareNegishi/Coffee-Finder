@@ -1,0 +1,62 @@
+# Supabase Pause Prevention Ping
+# A lightweight SELECT query to keep the Supabase free tier project active.
+# Runs twice a week to ensure no 7-day inactivity gap.
+# Works alongside cleanup.yml (Monday) to provide coverage on Wed and Sat.
+#
+# References:
+#   - Workflow syntax:        https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+#   - Schedule trigger:       https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+#   - Encrypted secrets:      https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions
+#   - setup-node action:      https://github.com/actions/setup-node
+#   - Supabase JS select:     https://supabase.com/docs/reference/javascript/select
+
+name: Supabase Ping
+
+on:
+  schedule:
+    - cron: '30 9 * * 3'  # Wednesday at 9:30 AM UTC
+    - cron: '30 9 * * 6'  # Saturday at 9:30 AM UTC
+
+  workflow_dispatch:  # Manual trigger from Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Supabase Client
+        run: npm install @supabase/supabase-js
+
+      # Uses the anon key — SELECT is allowed by existing RLS policy.
+      - name: Ping database
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          node -e "
+          const { createClient } = require('@supabase/supabase-js');
+          const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+          (async () => {
+            try {
+              const { count, error } = await supabase
+                .from('coffee_shops')
+                .select('*', { count: 'exact', head: true });
+
+              if (error) {
+                console.error('Ping failed:', error.message);
+                process.exit(1);
+              }
+
+              console.log('Ping successful — coffee_shops table has ' + count + ' rows');
+            } catch (err) {
+              console.error('Unexpected error:', err.message);
+              process.exit(1);
+            }
+          })();
+          "
