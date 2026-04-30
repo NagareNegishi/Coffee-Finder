@@ -44,9 +44,11 @@ jobs:
 
           (async () => {
             try {
-              const { count, error } = await supabase
+             
+              const { data, error } = await supabase
                 .from('coffee_shops')
-                .select('*', { count: 'exact', head: true });
+                .select('osm_id')
+                .limit(1);
 
               if (error) {
                 console.error('Ping failed:', error.message);
