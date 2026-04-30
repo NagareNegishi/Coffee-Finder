@@ -1,6 +1,6 @@
 # Supabase Pause Prevention Ping
 # A lightweight SELECT query to keep the Supabase free tier project active.
-# Runs twice a week to ensure no 7-day inactivity gap.
+# Runs daily to ensure no 7-day inactivity gap.
 # Works alongside cleanup.yml (Monday) to provide coverage on Wed and Sat.
 #
 # References:
@@ -14,8 +14,7 @@ name: Supabase Ping
 
 on:
   schedule:
-    - cron: '30 9 * * 3'  # Wednesday at 9:30 AM UTC
-    - cron: '30 9 * * 6'  # Saturday at 9:30 AM UTC
+    - cron: '37 9 * * *'  # Every day at 9:37 AM UTC (Offset to avoid delay)
 
   workflow_dispatch:  # Manual trigger from Actions tab
 
