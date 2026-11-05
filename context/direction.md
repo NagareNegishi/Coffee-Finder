@@ -1,6 +1,6 @@
 # Direction & deferrals
 
-checked: <date>
+checked: 2026-11-05
 
 Where things are heading and what is deliberately not being done. The "why" is the
 durable part. Verify status against `docs/progress.md`, `docs/plans/`, and issues.
@@ -9,27 +9,30 @@ durable part. Verify status against `docs/progress.md`, `docs/plans/`, and issue
 
 Near-term, roughly in queue order:
 
-- <item> -> `<path>`
+- Finish wrapping the finished app in the project seed: container rebuild check and `gh` setup -> `docs/progress.md`
 
 ## Deferred but real
 
-- <item not started, with the blocker> -> `<path>`
+- Analytics on popular search areas from `search_logs`; no code reads the table yet -> `SQL/search history.sql:4`
+- Ratings in the result list; the UI renders `rating` but no source supplies it -> `js/services/uiService.js:52`
 
 ## Deliberately deferred (why)
 
-- <decision + why> -> `<path>`
+- Nothing recorded. No plan or decision doc exists for Coffee Finder yet -> `docs/plans/`
 
 ## Not in scope for the product
 
-- <hard boundary> -> `<path>`
+- No backend of its own, no accounts -> CLAUDE.md "Project Overview"
 
 ## Where the live plans are
 
-- `docs/plans/<feature>/` = <convention> -> `docs/plans/`
+- `docs/plans/<feature>/` = per-feature product plan and decision files -> `docs/plans/`
 - This file indexes the live plans; it does not replace them.
 
 ## Notes for a reader
 
-- <frozen/stale context callout: a doc whose framing no longer matches current code> -> `<path>`
-
-<!-- SKELETON: structure only. Content fill is a separate session. -->
+- Everything under `docs/plans/` today comes from the seed (site-factory, verify-fanout and others), not from Coffee Finder -> `docs/plans/`
+- `README.md` Project Structure and Getting Started name a `database/` folder and a `database/cleanup.sql` file; the real folder is `SQL/` and the cleanup script is `SQL/setup monthly cleanup.sql` -> `README.md:62`, `SQL/`
+- `PROJECT_CONFIG.md` (deploy and secret names) is gitignored and exists only locally -> `.gitignore`
+- `js/OriginalCode.js` and `SQL/search history.sql` are kept for reference and unused -> `js/OriginalCode.js:1`, `SQL/search history.sql:2`
+- `docs/` also holds Coffee Finder research notes (Supabase, pg_cron, Leaflet, Overpass data format, NZ data collection) -> `docs/`

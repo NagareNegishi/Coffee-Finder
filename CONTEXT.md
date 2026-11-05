@@ -1,7 +1,3 @@
-<!-- Template skeleton. Fill in after the architecture has settled - not day one.
-     Delete this file and `context/` if the project stays small enough that
-     CLAUDE.md alone covers orientation. -->
-
 # Agent working context
 
 A lookup aid. CLAUDE.md (auto-loaded) and the code are truth.
@@ -14,16 +10,12 @@ When it disagrees with the code, the code wins and this file gets fixed on the s
 
 - `context/product.md`        - what the app is, who it serves. Read when scoping a feature.
 - `context/architecture.md`   - the parts and the seams between them. Read for structural work.
-- `context/invariants.api.md` - backend rule categories + where each is enforced. Read for backend work.
-- `context/invariants.ui.md`  - frontend rule categories + where each is enforced. Read for frontend work.
+- `context/invariants.api.md` - Supabase data-layer rules + where each is enforced. Read for database or `databaseService.js` work.
+- `context/invariants.ui.md`  - browser-code rules + where each is enforced. Read for `js/` or `index.html` work.
 - `context/direction.md`      - trajectory and deliberate deferrals. Read when planning.
 - `context/tree.md`           - every tracked file, one line each, purpose only. Search
   it for a path or area instead of `find`/`ls`/glob sweeps; never read it whole or at
   session start. Paired with `.claude/skills/read/SKILL.md`.
-
-Adjust this list to the project's real shape - merge the two invariants files for a
-single-layer app, drop `product.md` for an internal tool, add a file for a part that
-grew its own set of gotchas (e.g. billing, a queue).
 
 ## Read profile per task
 

@@ -42,7 +42,7 @@ is in every line.
 **NOT MAPPED: git-ignored or untracked local files.** These exist on this machine
 only. They are not in any tree below and were not read.
 
-- Secrets and local config: `.devcontainer/.env`
+- Secrets and local config: `.devcontainer/.env`, root `.env`, `PROJECT_CONFIG.md`
 - Session and Claude local state: `memory/`, `docs/session/baton.md`, `docs/notes.md`, `.github/drafts/`
 - Build output and dependencies: `reusables/frontend/node_modules/`
 - Per-subagent / per-session scratch: `.agent-scope/`, `.impl-worktrees/`, `build-orchestration/prompt-log/*` (except `README.md` and `_template.md`, tracked and in the tree below), `build-orchestration/strike-count.md`, `build-orchestration/route-block-count`
@@ -56,14 +56,16 @@ files changed.
 |---|---|---|
 | `build-orchestration/` | done | all 3 files |
 | `.claude/` | done | all files mapped; the 48 OWASP cheat sheets PARTLY READ (first heading only), see above |
-| `context/` | done | the 5 skeleton docs marked unfilled; `tree.md` is this file |
-| `.devcontainer/` | done | all 6 files |
+| `context/` | done | the 5 docs filled from the code on 2026-11-05; `tree.md` is this file |
+| `.devcontainer/` | done | all 6 files; `devcontainer.json` filled for Coffee Finder |
+| `js/` | done | all 9 files read in full |
+| `SQL/` | done | all 5 files read in full |
 | `docs/` | done | all files mapped; most entries read in part, not line by line - re-verify before relying on specifics |
-| `examples/` | done | all files across `stack/` (6 stacks) and `cicd/` (3 pipelines + dependabot baseline), leaning on each folder's own README |
-| `.github/` | done | the 1 tracked file |
+| `examples/` | done | `cicd/` only (3 pipelines + dependabot baseline), leaning on each folder's own README; `stack/` was deleted after the node-vite merge |
+| `.github/` | done | the PR template and the 2 workflows |
 | `reusables/` | done | all files; spot-checked against description, not every file individually re-read this pass |
 | `scripts/` | done | both files |
-| root files (`CLAUDE.md`, `CONTEXT.md`, `README.md`, `LICENSE`, `.editorconfig`, `.gitignore`, `REUSABLES.md`) | done | all 7 |
+| root files | done | seed files plus the Coffee Finder app files (`index.html`, `style.css`, `package.json`, `vite.config.js`, `Dockerfile`, `compose.yaml`, `.dockerignore`, `README.Docker.md`); `style.css` and the lockfile not read |
 
 ## build-orchestration/
 
@@ -119,7 +121,7 @@ build-orchestration/
 │   ├── route-guard.sh        SubagentStop hook that validates a subagent's final report against route-spec.json (envelope, route token, sections, per-route assertions), blocks up to twice per agent id, then fails open
 │   └── route-spec.json       machine-readable report contract used by route-guard.sh: for each of the 14 orchestrated agents, the report sections and the legal routes with the assertions each route must satisfy
 ├── rules/
-│   └── example.md  path-scoped rules template stub: front matter with a placeholder `paths: <backend-dir>/**` and no body text; copy per area (backend/frontend/tests) and replace the placeholders
+│   └── js.md  path-scoped rules for `js/**`: Supabase calls only in databaseService, settings from CONFIG, services are static classes and main.js only orchestrates
 ├── scripts/
 │   └── agent-worktree.sh  manager-side script giving a Bash subagent its own git worktree: add (optionally pruning test dirs), audit and merge against a permitted path set, remove, and start and finalize to stamp and collapse the session's scaffold commits
 ├── skills/
@@ -257,11 +259,11 @@ build-orchestration/
 
 ```
 context/
-├── architecture.md    skeleton for the parts/seams map; unfilled until the architecture settles
-├── direction.md       skeleton for trajectory and deferrals; unfilled
-├── invariants.api.md  skeleton for backend rule categories; unfilled
-├── invariants.ui.md   skeleton for frontend rule categories; unfilled
-├── product.md         skeleton for what the app is and who it serves; unfilled
+├── architecture.md    parts, seams and weak seams of Coffee Finder
+├── direction.md       near-term work, deferrals and stale-doc callouts
+├── invariants.api.md  rules for the Supabase data layer and its callers
+├── invariants.ui.md   rules for the browser code: data flow, DOM ids, ordering
+├── product.md         what the app is, who it serves, boundaries
 └── tree.md            this file: every file in the repo, one entry each, plus the Progress table
 ```
 
@@ -269,11 +271,11 @@ context/
 
 ```
 .devcontainer/
-├── .env.example          empty placeholder env template; fill once a stack's own .env.example is merged in
+├── .env.example          env template for the dev container; copy to .devcontainer/.env (not read)
 ├── devcontainer-lock.json  pins the three dev container features (Node, Claude Code, GitHub CLI) to digests
-├── devcontainer.json       generic dev container: app service, Node/Claude Code/GitHub CLI features, `<placeholder>` forwardPorts/mounts/extensions/env for a stack to fill in
+├── devcontainer.json       dev container for Coffee Finder: app service, Node/Claude Code/GitHub CLI features, port 5173, Pacific/Auckland TZ, `npm ci` on create
 ├── docker-compose.yml      generic compose: single app service with firewall capabilities and the shared claude-credentials volume; stack services/volumes are placeholders
-├── Dockerfile              generic debian base image plus firewall tools only; swap the base image and add stack packages per examples/<stack>/
+├── Dockerfile              generic debian base image plus firewall tools only; no stack packages needed for this project
 └── project-firewall.sh     default-deny outbound firewall run on every container start: DNS, SSH, localhost, GitHub ranges, a short baseline allowlist (Anthropic, npm, OSV); blocks IPv6; self-checks that example.com is unreachable and the GitHub API is reachable
 ```
 
@@ -357,7 +359,7 @@ docs/
 │   ├── README.md                              index of the .claude/skills/ plan and decision docs, kept separate from docs/plans/ so tooling meta-docs don't mix with product plans
 │   └── verify-fanout.md                       design for the verify-fanout multi-agent research workflow that checks an impl.md's external-verification items
 ├── notes-system.md  how a fact reaches the next session: the two auto-loaded files (CLAUDE.md, memory/MEMORY.md) versus everything else, pulled on demand
-└── progress.md       template for the project status log: key decisions and in-progress items, one line each
+└── progress.md       Coffee Finder status log: stack, key decisions (backend, data, deploy) and in-progress items
 ```
 
 `docs/notes.md` and `docs/session/baton.md` are gitignored local state - see "Not
@@ -390,59 +392,43 @@ examples/
 │   │   └── release.yml                         the real "build and publish everything at once" release: Windows, macOS and Linux, then one GitHub Release with a merged latest.json
 │   ├── dependabot.yml   baseline Dependabot config: one package-ecosystem block per manifest, weekly, ignoring minor/patch bumps; `<placeholder>` block for the backend ecosystem
 │   └── README.md        index of the cicd examples: what each folder is, its source project, and when dotnet-ec2-ecr/dotnet-render each apply
-└── stack/
-    ├── browser-extension/
-    │   ├── scripts/
-    │   │   ├── build.mjs           esbuild entry points for background/popup/content scripts, copies static assets, zips store builds
-    │   │   └── storeManifest.mjs   strips dev-only hosts and the pinned key for store submissions, plus a Firefox manifest variant
-    │   ├── manifest.json    MV3 dev manifest with `<placeholder>` tokens for name, key, domains, ports and icon filenames
-    │   ├── package.json     tsc --noEmit for typechecking, esbuild for the build, vitest for tests; build/build:store/build:prod-local/build:firefox/watch scripts
-    │   ├── README.md        states up front this is not a dev-container stack, lists the placeholder tokens and where each appears
-    │   └── tsconfig.json    @types/chrome, noEmit true since esbuild transpiles, erasableSyntaxOnly for the TS 7 compiler
-    ├── cpp/
-    │   ├── devcontainer.json       fragments to copy: node feature (Claude Code needs it on this base image), cpptools-extension-pack; no forwardPorts since the GUI runs on the host
-    │   ├── docker-compose.yml      single app service, no database; a commented stub marks where a second Node sync-server service would go
-    │   ├── Dockerfile              JUCE example base image plus ninja, clang-tools, and JUCE 8.0.12 built and installed at image build time
-    │   ├── project-firewall.sh     stack domain block: npm registry, OSV, VS Code marketplace; no C++-specific domains, since JUCE is fetched before the firewall exists
-    │   └── README.md               how to merge this C++/JUCE example's dev-container pieces into the seed placeholders, and which values stay project-specific
-    ├── dotnet/
-    │   ├── .env.example            root-level secrets template (registry API keys) from the source app; keep the pattern, replace the keys
-    │   ├── devcontainer.json       fragments to copy: forwardPorts for Kestrel HTTPS/HTTP, csdevkit and rest-client extensions; commented postCreateCommand still shows an older app's restore path
-    │   ├── docker-compose.yml      single app service; optional env_file pulls the root .env into the container
-    │   ├── Dockerfile              dotnet base image plus firewall tools and dotnet global tools on PATH; no db client, this stack has no database
-    │   ├── project-firewall.sh     stack domain block: NuGet, dotnetcli, VS Code marketplace, plus two app-specific registry APIs as an example of whitelisting your own external calls
-    │   └── README.md               how to merge this .NET-only example's dev-container pieces into the seed placeholders, and which values stay project-specific
-    ├── dotnet-postgres/
-    │   ├── reference/
-    │   │   ├── ASP.NET Core backend.md  notes on enum validation with JsonStringEnumConverter, why AllowedHosts matters, where security headers live, and an xUnit concept map
-    │   │   └── ASP.NET Identity.md      explainer on how ASP.NET Core Identity and JWT bearer fit together, what to build versus get free, why to skip MapIdentityApi, packages needed and reading links
-    │   ├── .env.example            POSTGRES_* vars; copy to .devcontainer/.env and fill
-    │   ├── devcontainer.json       fragments to copy: forwardPorts for backend/frontend/postgres, aspnet-https mount, Kestrel remoteEnv, postCreateCommand restore/install, csdevkit extension; frontend-node-modules mount left commented out as an opt-in Windows perf fix
-    │   ├── docker-compose.yml      db (Postgres) service plus postgres-data and aspnet-https volumes alongside app
-    │   ├── Dockerfile              dotnet base image plus postgresql-client, with dotnet-ef installed as the vscode user
-    │   ├── project-firewall.sh     stack domain block: NuGet, VS Code marketplace, dotnetcli, shadcn
-    │   └── README.md               how to merge this .NET + PostgreSQL example's dev-container pieces into the seed placeholders, which values stay project-specific, and the optional frontend-node-modules mount
-    ├── node-vite/
-    │   ├── devcontainer.json       fragments to copy: node feature, forwardPorts for the Vite dev server, npm install postCreateCommand, eslint/prettier/tailwindcss/vitest extensions
-    │   ├── docker-compose.yml      single app service, no database; optional env_file for local secrets
-    │   ├── Dockerfile              base:ubuntu-22.04 plus firewall tools only; Node comes from the devcontainer feature, not the image
-    │   ├── project-firewall.sh     stack domain block: npm registry, VS Code marketplace, shadcn/ui
-    │   └── README.md               how to merge this Node + Vite example's dev-container pieces into the seed placeholders, and which values stay project-specific
-    ├── python-postgres/
-    │   ├── .env.example            POSTGRES_* vars only; DATABASE_URL is built from them at shell start, no separate connection-string key
-    │   ├── devcontainer.json       fragments to copy: forwardPorts for uvicorn/Vite/postgres, frontend-node-modules mount, postCreateCommand with a pyproject.toml existence guard, shell-env building an asyncpg DATABASE_URL
-    │   ├── docker-compose.yml      db (Postgres) service plus postgres-data volume; Compose project name pinned to a `<project>` placeholder
-    │   ├── Dockerfile              Python base image plus postgresql-client and firewall tools; uv installed by copying the pinned binary out of Astral's own image
-    │   ├── project-firewall.sh     stack domain block: PyPI, npm registry, shadcn, VS Code marketplace, plus api.osv.dev for the owasp-* skills
-    │   └── README.md               how to merge this FastAPI + PostgreSQL example's dev-container pieces into the seed placeholders, which values stay project-specific, and the backend dependency set for reference
-    └── README.md    how each stack folder maps onto the seed's `.devcontainer/` placeholders, and the merge/delete workflow
-└── README.md    top-level index: points to stack/ (dev-container setups) and cicd/ (pipelines); neither group is wired into anything
+└── README.md    index of the cicd/ pipelines, which are not wired into anything
+```
+
+## js/
+
+```
+js/
+├── services/
+│   ├── databaseService.js      Supabase access: read nearby shops by RPC, upsert shops, log searches, delete stale rows
+│   ├── locationService.js      browser geolocation and the current-location vs map-centre choice
+│   ├── mapService.js           Leaflet map, search-radius circle, markers with popups, loading overlay
+│   ├── OpeningHoursService.js  open-now parsing of OSM opening_hours (common formats) and the open-now filter
+│   ├── osmService.js           Overpass query, response parsing into the DB row shape, one bulk NZ helper
+│   └── uiService.js            DOM output for results and status, plus the settings state and handlers
+├── config.js        Supabase client from Vite env vars and the CONFIG constants
+├── main.js          entry point: search flow and event wiring
+└── OriginalCode.js  pre-refactor single-file version, unused
+```
+
+## SQL/
+
+```
+SQL/
+├── create coffee shops.sql        coffee_shops table and its indexes
+├── function find nearby cafe.sql  RPC find_nearby_cafe: shops within a radius, sorted by distance
+├── search history.sql             unused analytics table, replaced by search_logs
+├── search logs.sql                search_logs table written by logSearch
+└── setup monthly cleanup.sql      pg_cron job that deletes shops older than 30 days
 ```
 
 ## .github/
 
 ```
 .github/
+├── workflows/
+│   ├── cleanup.yml  weekly delete of shops older than 30 days with the service role key
+│   └── ping.yml     daily SELECT against Supabase to keep the free tier awake
 └── PULL_REQUEST_TEMPLATE.md  PR body template: summary, related issues, notable decisions, test plan, a self-review checklist
 ```
 
@@ -635,9 +621,18 @@ scripts/
 ```
 .editorconfig  charset, LF line endings, final newline and trailing-whitespace trim for all files except Markdown; no indent rules, stack-specific sections are added per project
 .gitignore     ignores local env files, session notes and the baton, issue/PR drafts, build-orchestration prompt-log data and scratch counters, and the per-subagent scope/worktree dirs
-CLAUDE.md      skeleton project instructions: skill/config/attribution/notes rules, doc voice, placeholder overview and architecture sections, non-negotiable rules, response style
-CONTEXT.md     entry point: file list, which files to read per task type, and the rule that every claim carries a pointer
-LICENSE        MIT, copyright 2026 Nagare Negishi
-README.md      template repo overview: layout of each top-level folder and the instantiation checklist for turning this seed into a real project
+.dockerignore    files kept out of the production image build context
+CLAUDE.md        project instructions: overview, commands, configuration, architecture, skill pointers, rules, response style
+compose.yaml     builds the production image with the Supabase build args and maps it to port 3000
+CONTEXT.md       entry point: file list, which files to read per task type, and the rule that every claim carries a pointer
+Dockerfile       two-stage production image: Vite build, then nginx serving dist/
+index.html       the single page: settings panel, location options, map, results; loads Leaflet and js/main.js
+LICENSE          MIT, copyright 2026 Nagare Negishi
+package-lock.json  npm lockfile (not read)
+package.json     scripts dev, build, preview; dependencies Vite and supabase-js
+README.Docker.md generated Docker notes for the production image
+README.md        Coffee Finder overview, setup and Docker notes
+style.css        page styling (not read)
+vite.config.js   relative base path and index.html as the build input
 REUSABLES.md   catalogue of the copied, project-agnostic pieces in reusables/: frontend util hooks and functions, components and shadcn primitives, backend extensions, utils and services, each with what it does and what it needs
 ```
