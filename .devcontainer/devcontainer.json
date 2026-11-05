@@ -2,7 +2,7 @@
 // Replace every <placeholder>. Real stack values live in examples/<stack>/.
 // For format details, see https://aka.ms/devcontainer.json
 {
-	"name": "<project-name>",
+	"name": "coffee-finder",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -26,8 +26,8 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// <placeholder> backend, frontend, db ports
-	"forwardPorts": [],
+	// frontend (Vite dev server)
+	"forwardPorts": [5173],
 
 	"mounts": [
 		// Fixed volume name shared by every project built from the seed:
@@ -42,8 +42,7 @@
 		"NODE_OPTIONS": "--max-old-space-size=4096",
 		// Tell Claude Code where to find its config
 		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
-		// <placeholder> e.g. Pacific/Auckland
-		"TZ": "Etc/UTC"
+		"TZ": "Pacific/Auckland"
 	},
 
 	// Use 'remoteEnv' to set environment variables in the container. (for VS Code remote session)
@@ -51,9 +50,10 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": {
+		// Install frontend dependencies from the lockfile
+		"frontend": "npm ci",
 		// Set up Claude onboarding state, skip the onboarding process
 		"claude-onboarding": "echo '{\"hasCompletedOnboarding\":true}' > /home/vscode/.claude/.claude.json"
-		// <placeholder> dependency restore/install commands per stack (see examples/)
 	},
 
 	// Executes the firewall script every time the container starts
