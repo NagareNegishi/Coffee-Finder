@@ -1,6 +1,3 @@
-<!-- Template skeleton. Replace every <placeholder>.
-     Delete sections that do not apply. -->
-
 **Skill work**: before polishing or adding a skill in `.claude/skills/`, read
 `docs/skills/new-skills.md` (authoring and polish guide).
 
@@ -35,12 +32,12 @@ Promote to CLAUDE.md or a skill only with user review. Mechanism: `docs/notes-sy
 
 ## Project Overview
 
-<One paragraph: what the app does.>
+Coffee Finder finds cafes near the user. It takes the browser location (or a map pick), reads cached shops from Supabase, falls back to the OpenStreetMap Overpass API when the cache has too few results, and shows them on a Leaflet map with distance and opening status. Live at http://nagarenegishi.com/Coffee-Finder/ (GitHub Pages, `deploy` branch).
 
-- **Backend**: <framework + version> (`<backend-dir>/`)
-- **Frontend**: <framework + version> (`<frontend-dir>/`)
-- **Database**: <database + access layer>
-- **Test project**: <test framework> (`<test-dir>/`)
+- **Backend**: none. Supabase is called straight from the browser.
+- **Frontend**: vanilla JS (ES modules) + Vite ^4 (repo root: `index.html`, `js/`, `style.css`)
+- **Database**: hosted Supabase Postgres via `@supabase/supabase-js`; schema and functions in `SQL/`, run by hand in the Supabase SQL editor. No local database.
+- **Test project**: none
 
 The dev environment runs in a Dev Container (`.devcontainer/`).
 
@@ -61,60 +58,46 @@ and hooks). Check here before writing a new component or util; not part of any b
 
 ## Commands
 
-### Backend (from `<backend-dir>/`)
+No backend and no tests. Everything runs from the repo root.
 
 ```bash
-<run command>
-```
-
-### Tests (from repo root or `<test-dir>/`)
-
-```bash
-<test command>
-<single-test filter command>
-```
-
-### Frontend (from `<frontend-dir>/`)
-
-```bash
-<dev server command>    # <dev URL>
-<build command>
+npm run dev       # http://localhost:5173
+npm run build     # outputs dist/
+npm run preview
+docker compose up --build   # production image (Vite build + nginx), http://localhost:3000
 ```
 
 ## Configuration
 
-### Backend
-
-<Config file or env vars. One line per key: name — what it does, whether the app
-fails fast without it.>
-
 ### Frontend
 
-<Env vars, e.g. API base URL and which file sets it.>
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` - read in `js/config.js` via `import.meta.env`. Set in the root `.env` (gitignored); `compose.yaml` passes them as build args. Never read or edit `.env`.
+- Search defaults (radius, result counts, cache days, map, Overpass URL) live in `CONFIG` in `js/config.js`.
+
+### CI
+
+- `.github/workflows/cleanup.yml` (weekly) deletes shops older than 30 days with `SUPABASE_SERVICE_ROLE_KEY`. `ping.yml` (daily) runs a SELECT so the free tier does not pause. Secrets: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+- The service role key bypasses RLS. Never use it in frontend code.
 
 ## Architecture
 
 ### Backend
 
-<One line per layer: where controllers/routes live, how data access works, which
-concerns go through service abstractions. List models/DTOs only if their shape is
-not obvious from the code.>
+No server. Supabase tables `coffee_shops` (upsert on `osm_type, osm_id`) and `search_logs`; nearby search is the RPC `find_nearby_cafe` (`SQL/function find nearby cafe.sql`). Access goes only through `js/services/databaseService.js`.
 
 ### Frontend
 
-<Data flow in one line, e.g. pages → hooks → services → API. Routing table.
-Path aliases.>
+`index.html` -> `js/main.js` -> `js/services/*` (one class per concern: database, location, map, osm, opening hours, ui). Flow in `main.js`: read DB cache -> drop results older than 14 days -> if under 5, fetch Overpass and save -> re-read DB (sorted by distance) -> add open-now -> render list and markers. Single page, no router, no path aliases.
 
 ### Tests
 
-<How tests are isolated (in-memory DB, mocks), anything a new test must set up.>
+None yet.
 
 ## Skills
 
 - When writing or editing code: follow: `.claude/skills/code-commenting/SKILL.md`
 - When committing: follow `.claude/skills/git-commit/SKILL.md` — Conventional
   Commits, atomic commits, `feat`/`fix` need an issue ref.
-<other skill pointers>
 
 ## Non-negotiable rules
 
@@ -126,7 +109,7 @@ Path aliases.>
 
 - No AI-clichéd wording, anywhere - write like a person would.
 
-- Never write or edit outside `/workspaces/<root>` (scratchpad excepted).
+- Never write or edit outside `/workspaces/Coffee-Finder` (scratchpad excepted).
 
 ## Response style
 
