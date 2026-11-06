@@ -17,11 +17,11 @@ ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 
 # Copy package files (package.json and package-lock.json)
-COPY package*.json ./
+COPY app/package*.json ./
 # Install ALL dependencies (including devDependencies for Vite)
 RUN npm ci
 # Copy source code
-COPY . .
+COPY app/ .
 # Build the application
 RUN npm run build
 
