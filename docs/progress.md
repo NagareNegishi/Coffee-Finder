@@ -19,4 +19,4 @@ Vanilla JS + Vite + Leaflet cafe finder backed by Supabase and the Overpass API.
 
 ## In Progress - pick up next session
 
-- Project seed wrap: container rebuild check and `gh` setup (`gh auth login`, `/label-setup`, `scripts/protect-main.sh`).
+- None.
