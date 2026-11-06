@@ -1,0 +1,49 @@
+# Supabase Search Activity
+# Runs a real nearby-cafe search (the find_nearby_cafe RPC the app uses) with a
+# random position and radius, so the Supabase free tier project sees actual query
+# activity. ping.yml (plain SELECT) stays as is; the green ping runs did not stop
+# the project from pausing. Logic lives in .github/scripts/random-search.js.
+#
+# References:
+#   - Schedule trigger:       https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+#   - Encrypted secrets:      https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions
+#   - checkout action:        https://github.com/actions/checkout
+#   - setup-node action:      https://github.com/actions/setup-node
+#   - Supabase JS rpc:        https://supabase.com/docs/reference/javascript/rpc
+
+name: Supabase Search Activity
+
+on:
+  schedule:
+    - cron: '13 21 * * *'  # Every day at 9:13 PM UTC (ping.yml runs at 9:37 AM)
+
+  workflow_dispatch:  # Manual trigger from Actions tab
+    inputs:
+      randomize_results:
+        description: 'Randomize max_results (default: always use the max)'
+        type: boolean
+        default: false
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Supabase Client
+        run: npm install @supabase/supabase-js
+
+      # Uses the anon key, same as the app. The RPC is allowed by the existing policies.
+      - name: Run random nearby search
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          RANDOMIZE_RESULTS: ${{ inputs.randomize_results }}
+        run: node .github/scripts/random-search.js
