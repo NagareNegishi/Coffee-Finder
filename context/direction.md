@@ -14,7 +14,7 @@ Near-term, roughly in queue order:
 ## Deferred but real
 
 - Analytics on popular search areas from `search_logs`; no code reads the table yet -> `SQL/search history.sql:4`
-- Ratings in the result list; the UI renders `rating` but no source supplies it -> `js/services/uiService.js:52`
+- Ratings in the result list; the UI renders `rating` but no source supplies it -> `app/js/services/uiService.js:52`
 
 ## Deliberately deferred (why)
 
@@ -34,5 +34,5 @@ Near-term, roughly in queue order:
 - Everything under `docs/plans/` today comes from the seed (site-factory, verify-fanout and others), not from Coffee Finder -> `docs/plans/`
 - `README.md` Project Structure and Getting Started name a `database/` folder and a `database/cleanup.sql` file; the real folder is `SQL/` and the cleanup script is `SQL/setup monthly cleanup.sql` -> `README.md:62`, `SQL/`
 - `PROJECT_CONFIG.md` (deploy and secret names) is gitignored and exists only locally -> `.gitignore`
-- `js/OriginalCode.js` and `SQL/search history.sql` are kept for reference and unused -> `js/OriginalCode.js:1`, `SQL/search history.sql:2`
+- `app/js/OriginalCode.js` and `SQL/search history.sql` are kept for reference and unused -> `app/js/OriginalCode.js:1`, `SQL/search history.sql:2`
 - `docs/` also holds Coffee Finder research notes (Supabase, pg_cron, Leaflet, Overpass data format, NZ data collection) -> `docs/`

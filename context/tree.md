@@ -58,14 +58,14 @@ files changed.
 | `.claude/` | done | all files mapped; the 48 OWASP cheat sheets PARTLY READ (first heading only), see above |
 | `context/` | done | the 5 docs filled from the code on 2026-11-05; `tree.md` is this file |
 | `.devcontainer/` | done | all 6 files; `devcontainer.json` filled for Coffee Finder |
-| `js/` | done | all 9 files read in full |
+| `app/` | done | `app/js/` all 9 files read in full; `style.css` and the lockfile not read |
 | `SQL/` | done | all 5 files read in full |
 | `docs/` | done | all files mapped; most entries read in part, not line by line - re-verify before relying on specifics |
 | `examples/` | done | `cicd/` only (3 pipelines + dependabot baseline), leaning on each folder's own README; `stack/` was deleted after the node-vite merge |
 | `.github/` | done | the PR template and the 2 workflows |
 | `reusables/` | done | all files; spot-checked against description, not every file individually re-read this pass |
 | `scripts/` | done | both files |
-| root files | done | seed files plus the Coffee Finder app files (`index.html`, `style.css`, `package.json`, `vite.config.js`, `Dockerfile`, `compose.yaml`, `.dockerignore`, `README.Docker.md`); `style.css` and the lockfile not read |
+| root files | done | seed files plus the Coffee Finder files (`Dockerfile`, `compose.yaml`, `.dockerignore`, `README.Docker.md`) |
 
 ## build-orchestration/
 
@@ -121,7 +121,7 @@ build-orchestration/
 │   ├── route-guard.sh        SubagentStop hook that validates a subagent's final report against route-spec.json (envelope, route token, sections, per-route assertions), blocks up to twice per agent id, then fails open
 │   └── route-spec.json       machine-readable report contract used by route-guard.sh: for each of the 14 orchestrated agents, the report sections and the legal routes with the assertions each route must satisfy
 ├── rules/
-│   └── js.md  path-scoped rules for `js/**`: Supabase calls only in databaseService, settings from CONFIG, services are static classes and main.js only orchestrates
+│   └── js.md  path-scoped rules for `app/js/**`: Supabase calls only in databaseService, settings from CONFIG, services are static classes and main.js only orchestrates
 ├── scripts/
 │   └── agent-worktree.sh  manager-side script giving a Bash subagent its own git worktree: add (optionally pruning test dirs), audit and merge against a permitted path set, remove, and start and finalize to stamp and collapse the session's scaffold commits
 ├── skills/
@@ -623,16 +623,12 @@ scripts/
 .gitignore     ignores local env files, session notes and the baton, issue/PR drafts, build-orchestration prompt-log data and scratch counters, and the per-subagent scope/worktree dirs
 .dockerignore    files kept out of the production image build context
 CLAUDE.md        project instructions: overview, commands, configuration, architecture, skill pointers, rules, response style
+app/            the Vite app: index.html (single page), js/ (main, config, services), style.css, vite.config.js (relative base, envDir at repo root), package.json (scripts dev, build, preview; Vite and supabase-js) and its lockfile
 compose.yaml     builds the production image with the Supabase build args and maps it to port 3000
 CONTEXT.md       entry point: file list, which files to read per task type, and the rule that every claim carries a pointer
 Dockerfile       two-stage production image: Vite build, then nginx serving dist/
-index.html       the single page: settings panel, location options, map, results; loads Leaflet and js/main.js
 LICENSE          MIT, copyright 2026 Nagare Negishi
-package-lock.json  npm lockfile (not read)
-package.json     scripts dev, build, preview; dependencies Vite and supabase-js
 README.Docker.md generated Docker notes for the production image
 README.md        Coffee Finder overview, setup and Docker notes
-style.css        page styling (not read)
-vite.config.js   relative base path and index.html as the build input
 REUSABLES.md   catalogue of the copied, project-agnostic pieces in reusables/: frontend util hooks and functions, components and shadcn primitives, backend extensions, utils and services, each with what it does and what it needs
 ```

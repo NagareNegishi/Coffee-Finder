@@ -11,7 +11,7 @@ When it disagrees with the code, the code wins and this file gets fixed on the s
 - `context/product.md`        - what the app is, who it serves. Read when scoping a feature.
 - `context/architecture.md`   - the parts and the seams between them. Read for structural work.
 - `context/invariants.api.md` - Supabase data-layer rules + where each is enforced. Read for database or `databaseService.js` work.
-- `context/invariants.ui.md`  - browser-code rules + where each is enforced. Read for `js/` or `index.html` work.
+- `context/invariants.ui.md`  - browser-code rules + where each is enforced. Read for `app/js/` or `app/index.html` work.
 - `context/direction.md`      - trajectory and deliberate deferrals. Read when planning.
 - `context/tree.md`           - every tracked file, one line each, purpose only. Search
   it for a path or area instead of `find`/`ls`/glob sweeps; never read it whole or at

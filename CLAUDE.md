@@ -35,7 +35,7 @@ Promote to CLAUDE.md or a skill only with user review. Mechanism: `docs/notes-sy
 Coffee Finder finds cafes near the user. It takes the browser location (or a map pick), reads cached shops from Supabase, falls back to the OpenStreetMap Overpass API when the cache has too few results, and shows them on a Leaflet map with distance and opening status. Live at http://nagarenegishi.com/Coffee-Finder/ (GitHub Pages, `deploy` branch).
 
 - **Backend**: none. Supabase is called straight from the browser.
-- **Frontend**: vanilla JS (ES modules) + Vite ^4 (repo root: `index.html`, `js/`, `style.css`)
+- **Frontend**: vanilla JS (ES modules) + Vite ^4 (`app/`: `index.html`, `js/`, `style.css`)
 - **Database**: hosted Supabase Postgres via `@supabase/supabase-js`; schema and functions in `SQL/`, run by hand in the Supabase SQL editor. No local database.
 - **Test project**: none
 
@@ -58,21 +58,22 @@ and hooks). Check here before writing a new component or util; not part of any b
 
 ## Commands
 
-No backend and no tests. Everything runs from the repo root.
+No backend and no tests. npm commands run from `app/`; `docker compose` runs from the repo root.
 
 ```bash
+cd app
 npm run dev       # http://localhost:5173
-npm run build     # outputs dist/
+npm run build     # outputs app/dist/
 npm run preview
-docker compose up --build   # production image (Vite build + nginx), http://localhost:3000
+cd .. && docker compose up --build   # production image (Vite build + nginx), http://localhost:3000
 ```
 
 ## Configuration
 
 ### Frontend
 
-- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` - read in `js/config.js` via `import.meta.env`. Set in the root `.env` (gitignored); `compose.yaml` passes them as build args. Never read or edit `.env`.
-- Search defaults (radius, result counts, cache days, map, Overpass URL) live in `CONFIG` in `js/config.js`.
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` - read in `app/js/config.js` via `import.meta.env`. Set in the root `.env` (gitignored; `envDir: '..'` in `app/vite.config.js` points Vite at it); `compose.yaml` passes them as build args. Never read or edit `.env`.
+- Search defaults (radius, result counts, cache days, map, Overpass URL) live in `CONFIG` in `app/js/config.js`.
 
 ### CI
 
@@ -83,11 +84,11 @@ docker compose up --build   # production image (Vite build + nginx), http://loca
 
 ### Backend
 
-No server. Supabase tables `coffee_shops` (upsert on `osm_type, osm_id`) and `search_logs`; nearby search is the RPC `find_nearby_cafe` (`SQL/function find nearby cafe.sql`). Access goes only through `js/services/databaseService.js`.
+No server. Supabase tables `coffee_shops` (upsert on `osm_type, osm_id`) and `search_logs`; nearby search is the RPC `find_nearby_cafe` (`SQL/function find nearby cafe.sql`). Access goes only through `app/js/services/databaseService.js`.
 
 ### Frontend
 
-`index.html` -> `js/main.js` -> `js/services/*` (one class per concern: database, location, map, osm, opening hours, ui). Flow in `main.js`: read DB cache -> drop results older than 14 days -> if under 5, fetch Overpass and save -> re-read DB (sorted by distance) -> add open-now -> render list and markers. Single page, no router, no path aliases.
+`app/index.html` -> `app/js/main.js` -> `app/js/services/*` (one class per concern: database, location, map, osm, opening hours, ui). Flow in `main.js`: read DB cache -> drop results older than 14 days -> if under 5, fetch Overpass and save -> re-read DB (sorted by distance) -> add open-now -> render list and markers. Single page, no router, no path aliases.
 
 ### Tests
 

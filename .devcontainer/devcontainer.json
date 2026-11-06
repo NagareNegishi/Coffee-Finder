@@ -51,7 +51,7 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": {
 		// Install frontend dependencies from the lockfile
-		"frontend": "npm ci",
+		"frontend": "npm ci --prefix app",
 		// Set up Claude onboarding state, skip the onboarding process
 		"claude-onboarding": "echo '{\"hasCompletedOnboarding\":true}' > /home/vscode/.claude/.claude.json"
 	},

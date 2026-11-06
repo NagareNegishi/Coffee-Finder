@@ -48,22 +48,25 @@ This project is a learning exercise focused on applying JavaScript fundamentals,
 
 ```
 coffee-finder/
-├── index.html          # Main HTML structure
-├── js/
-│   ├── config.js         # Configuration for Supabase and Overpass API
-│   ├── main.js            # Application entry point and initialization
-│   └── services/
-│       ├── databaseService.js    # Supabase database operations
-│       ├── locationService.js    # Geolocation handling
-│       ├── mapService.js         # Leaflet map integration
-│       ├── OpeningHoursService.js # Opening hours parsing
-│       ├── osmService.js         # OpenStreetMap API integration
-│       └── uiService.js          # User interface management
+├── app/
+│   ├── index.html          # Main HTML structure
+│   ├── js/
+│   │   ├── config.js         # Configuration for Supabase and Overpass API
+│   │   ├── main.js            # Application entry point and initialization
+│   │   └── services/
+│   │       ├── databaseService.js    # Supabase database operations
+│   │       ├── locationService.js    # Geolocation handling
+│   │       ├── mapService.js         # Leaflet map integration
+│   │       ├── OpeningHoursService.js # Opening hours parsing
+│   │       ├── osmService.js         # OpenStreetMap API integration
+│   │       └── uiService.js          # User interface management
+│   ├── style.css           # Styling and responsive design
+│   ├── vite.config.js      # Vite config
+│   └── package.json        # Scripts and dependencies
 ├── database/
 │   ├── create coffee shops.sql       # Database schema
 │   ├── function find nearby cafe.sql # Search function
 │   └── setup monthly cleanup.sql     # Automated cleanup setup
-├── style.css           # Styling and responsive design
 └── README.md           # Project documentation
 ```
 
@@ -74,8 +77,8 @@ coffee-finder/
    - Run `database/create coffee shops.sql` in Supabase SQL Editor
    - Run `database/function find nearby cafe.sql` for search functionality
    - Run `database/cleanup.sql` for automated data maintenance
-3. Configure Supabase connection in `js/config.js`
-4. Open `index.html` in a web browser
+3. Put `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in a `.env` at the repo root (read by `app/js/config.js`)
+4. Run `cd app && npm ci && npm run dev`, then open http://localhost:5173
 5. Allow location access when prompted
 6. Click "Find Coffee Shops" to search for nearby cafes
 
