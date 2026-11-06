@@ -70,7 +70,7 @@ done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | aggregate -q)
 # api.osv.dev — vulnerability database, used by the owasp-* skills
 #
 # <placeholder> Add stack domains below, one per line ending in \
-# (e.g. NuGet, VS Code marketplace — see examples/<stack>/ for a ready-made block)
+# (e.g. NuGet, VS Code marketplace)
 for domain in \
     "api.anthropic.com" \
     "registry.npmjs.org" \
