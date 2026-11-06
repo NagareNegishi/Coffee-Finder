@@ -61,7 +61,6 @@ files changed.
 | `app/` | done | `app/js/` all 9 files read in full; `style.css` and the lockfile not read |
 | `SQL/` | done | all 5 files read in full |
 | `docs/` | done | all files mapped; most entries read in part, not line by line - re-verify before relying on specifics |
-| `examples/` | done | `cicd/` only (3 pipelines + dependabot baseline), leaning on each folder's own README; `stack/` was deleted after the node-vite merge |
 | `.github/` | done | the PR template and the 2 workflows |
 | `reusables/` | done | all files; spot-checked against description, not every file individually re-read this pass |
 | `scripts/` | done | both files |
@@ -311,42 +310,30 @@ docs/
 │   ├── v3-no-coauthor.md       v2 permissions unchanged; the coauthor-guard.sh hook denies any command carrying a Co-Authored-By trailer or the Claude author identity
 │   └── v4-gh-allowlist.md      opens the GitHub CLI for the first time: eleven gh forms allowed silently, everything else hard-denied by the gh-guard.sh hook
 ├── plans/
-│   ├── idea-shaping/
-│   │   └── product.md  idea plan for a voice-to-product-plan pipeline: record a spoken idea, transcribe and organize it, ask about unclear parts, hand it off once well-formed
-│   ├── promotion-engine/
-│   │   └── product.md  idea plan for a reusable product-promotion engine: register a product, work out who to reach, draft channel-appropriate content on a cadence
 │   ├── reusables-candidates/
 │   │   ├── implementation-order.md  round 1 status log for populating reusables/: test infra setup and which candidate entries are done, by phase
 │   │   └── proposal.md              round 1 proposal of reusables/ candidates to accept or reject one by one, entries that build on each other, and later rounds to explore
-│   ├── site-factory/
-│   │   ├── catalog.md     v1 pattern catalog: which site sections ship at Level 1, and the day-cost cutoff rule for the cut
-│   │   ├── decisions.md   recommendations for site-factory's nine open questions, each awaiting promotion through product.md's maturity scheme
-│   │   ├── ideas.md       uncommitted idea pool for site-factory beyond the v1 catalog, tagged by cost and phase
-│   │   ├── impl.md        implementation plan for site-factory, verified against official sites via domain-restricted search
-│   │   ├── intake.md      site-factory's content-intake design: a Zod schema per section as the single source of truth, mirrored by the client questionnaire
-│   │   ├── level-2.md     contract that site-factory's Phase 3 dynamic services must support, while the site itself stays static
-│   │   ├── operations.md  site-factory's delivery and operations proposal: client lifecycle, per-tier obligations, and how delivered sites survive over time
-│   │   └── product.md     ai-audited plan for site-factory, linking out to its detail docs (decisions, catalog, intake, operations, level-2)
-│   ├── site-prospector/
-│   │   └── product.md  idea plan for a lead-prospecting tool: find outdated or broken sites, score them as leads for a web-building service
-│   ├── verify-fanout/
-│   │   ├── impl.md     implementation plan for verify-fanout: a standalone headless-Claude container running a research-manager that dispatches researcher subagents
-│   │   └── product.md  settled product plan for verify-fanout: a managed multi-agent workflow that checks every external claim in an impl.md against its cited source
 │   └── .gitkeep  keeps docs/plans/ tracked when empty of files
 ├── reference/
-│   ├── project-specific/
-│   │   ├── ses-rejection-notes.md  worked example: timeline of an AWS SES production-access rejection and the move to a different email provider
-│   │   └── stack-decisions.md     worked example: production stack decisions against AWS pricing checked on a fixed date; verify before reusing, pricing models shift
 │   ├── Claude Code — WSL credential extraction.md  workaround for authenticating Claude Code inside a Dev Container with no browser: auth in WSL, extract the credentials file, inject it into the Docker volume
 │   ├── Cookie storage for JWTs.md                  explainer on httpOnly refresh cookies versus localStorage, the end-to-end auth flow, and silent refresh with a concurrency lock
 │   ├── deployment-setup.md                         reference for deploying a project: AWS infrastructure, secrets configuration, EC2 setup; see production-checklist.md for pre-launch hardening
 │   ├── Dev Containers.md                           notes on Dev Containers and the Claude Code feature: spec links, key concepts, setup flow
 │   ├── new-machine-setup.md                        setup steps on a new machine: fix git line endings, prerequisites, Dev Containers extension
 │   ├── owasp-guard-skill-SETUP.md                  setup notes for the owasp-guard, owasp-update and owasp-scan skills: required folder layout and installation steps
-│   ├── production-checklist.md                     generic step order for taking an app to production (auth, infra, config, logging); the worked AWS/.NET example is in project-specific/stack-decisions.md
+│   ├── production-checklist.md                     generic step order for taking an app to production (auth, infra, config, logging)
 │   ├── refresh tokens.md                           explainer on access versus refresh tokens, rotation and the jti claim
 │   ├── Setup pipeline in EC2.md                     one-time EC2 setup for a CI/CD pipeline: Docker, Docker Compose, AWS CLI, app directory
 │   └── Ssl tls production setup guide.md           concept reference for TLS with Let's Encrypt and Certbot on a production web server, using a worked EC2/nginx example
+├── research/
+│   ├── coffee_shops.csv                CSV of coffee shop rows (not read)
+│   ├── docker.md                       how the Dockerfile takes the Supabase build args that compose.yaml passes in
+│   ├── Leaflet.md                      notes on using Leaflet for the map UI
+│   ├── NZ Cofee heatmap.png            heatmap image (not read)
+│   ├── NZ Data Collection Strategy.md  grid-based plan for collecting NZ cafes with 5 km Overpass queries
+│   ├── OpenStreetMap Data Format.md    what the Overpass API is and how to query OSM for coffee shops
+│   ├── pg_cron.md                      setting up the monthly PostgreSQL cleanup with pg_cron
+│   └── Supabase.md                     how to initialize the Supabase JS client
 ├── session/
 │   └── template.md  template for the session baton file: this session, goal, next task and read-first sections
 ├── skills/
@@ -365,50 +352,26 @@ docs/
 `docs/notes.md` and `docs/session/baton.md` are gitignored local state - see "Not
 mapped" above, not in this tree.
 
-## examples/
+## app/
 
 ```
-examples/
-├── cicd/
-│   ├── dotnet-ec2-ecr/
-│   │   ├── deploy.yml        test → build/push to ECR → EF Core migration over an SSH tunnel to RDS → SSH+Compose redeploy on EC2
-│   │   ├── pr-checks.yml     merge gate: dotnet test, frontend build/lint/test as separate parallel jobs
-│   │   ├── README.md         what each workflow does, the secrets it needs, and which values stay project-specific
-│   │   └── renew-cert.yml    monthly cron that renews the Let's Encrypt cert only when it is within 30 days of expiry, then restarts containers
-│   ├── dotnet-render/
-│   │   ├── demo-reset.yml    daily cron plus manual trigger that calls the app's own API to reset demo data and purge unverified accounts
-│   │   ├── deploy.yml        test → EF Core migration straight against Render Postgres → curl to Render's deploy hook; no ECR or SSH tunnel
-│   │   ├── pr-checks.yml     same merge-gate shape as dotnet-ec2-ecr's
-│   │   └── README.md         what each workflow does, the secrets it needs, and when to pick this over the EC2/ECR example
-│   ├── tauri-desktop-release/
-│   │   ├── build-windows.yml                  manual MSI-only build, for verifying the Windows path without a full multi-OS run
-│   │   ├── flatpak-build.yml                   runs flatpak-builder against the repo's Flatpak manifest; can't run in a devcontainer (needs bubblewrap)
-│   │   ├── flatpak-demo-video.yml              records a video of the built Flatpak under a virtual display, for a Flathub submission
-│   │   ├── README.md                           what each workflow does, the shared build/cache pattern, and which values stay project-specific
-│   │   ├── release-linux.yml                   manual Linux-only build and publish of the .deb for Flathub submission
-│   │   ├── release-macos-apple-silicon.yml     manual arm64-only macOS build and publish; kept as a reference/fallback
-│   │   ├── release-macos.yml                   manual universal-binary (Apple Silicon + Intel) macOS build and publish
-│   │   ├── release-windows.yml                 manual Windows build and publish, merging its entry into the updater's shared latest.json
-│   │   └── release.yml                         the real "build and publish everything at once" release: Windows, macOS and Linux, then one GitHub Release with a merged latest.json
-│   ├── dependabot.yml   baseline Dependabot config: one package-ecosystem block per manifest, weekly, ignoring minor/patch bumps; `<placeholder>` block for the backend ecosystem
-│   └── README.md        index of the cicd examples: what each folder is, its source project, and when dotnet-ec2-ecr/dotnet-render each apply
-└── README.md    index of the cicd/ pipelines, which are not wired into anything
-```
-
-## js/
-
-```
-js/
-├── services/
-│   ├── databaseService.js      Supabase access: read nearby shops by RPC, upsert shops, log searches, delete stale rows
-│   ├── locationService.js      browser geolocation and the current-location vs map-centre choice
-│   ├── mapService.js           Leaflet map, search-radius circle, markers with popups, loading overlay
-│   ├── OpeningHoursService.js  open-now parsing of OSM opening_hours (common formats) and the open-now filter
-│   ├── osmService.js           Overpass query, response parsing into the DB row shape, one bulk NZ helper
-│   └── uiService.js            DOM output for results and status, plus the settings state and handlers
-├── config.js        Supabase client from Vite env vars and the CONFIG constants
-├── main.js          entry point: search flow and event wiring
-└── OriginalCode.js  pre-refactor single-file version, unused
+app/
+├── js/
+│   ├── services/
+│   │   ├── databaseService.js      Supabase access: read nearby shops by RPC, upsert shops, log searches, delete stale rows
+│   │   ├── locationService.js      browser geolocation and the current-location vs map-centre choice
+│   │   ├── mapService.js           Leaflet map, search-radius circle, markers with popups, loading overlay
+│   │   ├── OpeningHoursService.js  open-now parsing of OSM opening_hours (common formats) and the open-now filter
+│   │   ├── osmService.js           Overpass query, response parsing into the DB row shape, one bulk NZ helper
+│   │   └── uiService.js            DOM output for results and status, plus the settings state and handlers
+│   ├── config.js        Supabase client from Vite env vars and the CONFIG constants
+│   ├── main.js          entry point: search flow and event wiring
+│   └── OriginalCode.js  pre-refactor single-file version, unused
+├── index.html         the single page: settings panel, location options, map, results; loads Leaflet and js/main.js
+├── package-lock.json  npm lockfile (not read)
+├── package.json       scripts dev, build, preview; dependencies Vite and supabase-js
+├── style.css          page styling (not read)
+└── vite.config.js     relative base path, env files read from the repo root, index.html as the build input
 ```
 
 ## SQL/

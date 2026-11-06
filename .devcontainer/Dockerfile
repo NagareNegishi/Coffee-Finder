@@ -3,7 +3,7 @@
 FROM mcr.microsoft.com/devcontainers/base:debian
 
 # Install firewall tools — required by project-firewall.sh, do not remove.
-# Add stack packages (db clients etc.) to this list; see examples/.
+# Add stack packages (db clients etc.) to this list.
 # "apt-get update" fetches the latest package lists from Debian/Ubuntu repositories
 # "apt-get install" installs the packages. "-y" auto-confirms prompts. "--no-install-recommends" tells apt to install only what's strictly required
 # "apt-get clean" — once installed, the original package files serve no purpose inside the image.
@@ -24,7 +24,7 @@ RUN chmod +x /usr/local/bin/project-firewall.sh \
     && chmod 0440 /etc/sudoers.d/vscode-firewall
 
 
-# <placeholder> stack tool installs as the vscode user, e.g. dotnet-ef (see examples/)
+# <placeholder> stack tool installs as the vscode user, e.g. dotnet-ef
 # USER vscode
 # RUN <tool install>
 # ENV PATH="$PATH:<tool path>"
