@@ -1,0 +1,72 @@
+# Deploy to GitHub Pages
+# Builds the Vite site and publishes dist/ whenever main changes (a merge).
+# Needs Settings -> Pages -> Source set to "GitHub Actions".
+#
+# References:
+#   - Custom Pages workflows: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
+#   - deploy-pages action:    https://github.com/actions/deploy-pages
+#   - upload-pages-artifact:  https://github.com/actions/upload-pages-artifact
+#   - Pages starter workflow: https://github.com/actions/starter-workflows/blob/main/pages/static.yml
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:  # Manual trigger from Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; let a running deploy finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # TODO: enable once the project has tests. A failing test blocks the deploy.
+      # - name: Run tests
+      #   run: npm test
+
+      # The anon key is public by design; it ends up in the bundle.
+      - name: Build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
